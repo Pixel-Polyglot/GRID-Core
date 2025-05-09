@@ -1,4 +1,3 @@
-#include <grid.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <GRID/window.h>
@@ -9,15 +8,17 @@
 #include <dlfcn.h>
 #include <fstream>
 #include <nlohmann/json.hpp>
+#include "GRID/version.h"
 using json = nlohmann::json;
 
 using AppFunc = void (*)();
+using AppFuncInit = void (*)(int atgc, char* argv[]);
 using AppFuncVersion = int (*)();
 
-extern "C" void start(const char* jsonPath) __attribute__((visibility("default")));
+extern "C" void start(const char* jsonPath, int argc, char* argv[]) __attribute__((visibility("default")));
 
-extern "C" void start(const char* jsonPath) {
-	std::cout << "GRID Core v0.1" << std::endl;
+extern "C" void start(const char* jsonPath, int argc, char* argv[]) {
+	std::cout << "GRID Core v" << VERSION_MAJOR << "." << VERSION_MINOR << std::endl;
 
 	char cwd[PATH_MAX];
     getcwd(cwd, sizeof(cwd));
@@ -39,7 +40,7 @@ extern "C" void start(const char* jsonPath) {
         std::cout << "failed to load application library " << dlerror() << std::endl;
     }
 
-	AppFunc appInit = (AppFunc) dlsym(hAppLib, "init");
+	AppFuncInit appInit = (AppFuncInit) dlsym(hAppLib, "init");
 	AppFunc appRun = (AppFunc) dlsym(hAppLib, "run");
 	AppFunc appDestroy = (AppFunc) dlsym(hAppLib, "destroy");
 	AppFunc appSetWidgets = (AppFunc) dlsym(hAppLib, "setWidgets");
@@ -79,7 +80,9 @@ extern "C" void start(const char* jsonPath) {
 	ui.init(window.getWindow(), 4, 5);
 	renderer.init();
 
-	appInit();
+	appInit(argc, argv);
+
+	appSetWidgets();
 
 	while (!glfwWindowShouldClose(window.getWindow())) {
 		glfwPollEvents();
