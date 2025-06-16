@@ -24,7 +24,7 @@ endif()
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 add_definitions(-DEXPORT_SHARED)
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+# set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 link_directories(deps/libs)
 include_directories(deps/include src/headers deps/libs/imgui deps/libs/implot deps/include/TinyTIFF)
