@@ -1,4 +1,4 @@
-#include <GRID/window.h>
+#include <window.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -59,4 +59,8 @@ GLFWwindow* Window::getWindow() {
 
 void Window::enableVsync(bool enable) {
     glfwSwapInterval(enable);
+}
+
+double Window::getDeltaTime() {
+    return glfwGetTime();
 }

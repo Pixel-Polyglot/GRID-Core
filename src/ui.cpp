@@ -1,12 +1,13 @@
-#include <GRID/ui.h>
+#include <ui.h>
 #include <iostream>
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
-#include <GRID/widget.h>
+#include <GRID/GRID_widget.h>
 #include <GLFW/glfw3.h>
-#include <GRID/window.h>
+#include <window.h>
 #include <implot.h>
+#include <string>
 
 UI ui = UI();
 
@@ -17,7 +18,7 @@ UI::~UI() {
 }
 
 void UI::destroy() {
-    for (Widget* widget : widgets) {
+    for (GRID_Widget* widget : widgets) {
         delete widget;
     }
 
@@ -41,7 +42,7 @@ void UI::init(GLFWwindow* window, int ogl_version_major, int ogl_version_minor) 
     ImGui_ImplOpenGL3_Init(versionString.c_str());
 }
 
-void UI::addWidget(Widget* widget) {
+void UI::addWidget(GRID_Widget* widget) {
     widgets.push_back(widget);
 }
 
@@ -76,7 +77,7 @@ void renderDockingSpace() {
 void UI::render() {
     preRender();
     renderDockingSpace();
-    for (Widget* widget : widgets) {
+    for (GRID_Widget* widget : widgets) {
         widget->render();
     }
     postRender();

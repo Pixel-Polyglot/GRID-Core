@@ -1,9 +1,10 @@
-#include <GRID/renderer.h>
-#include <GRID/shaderManager.h>
+#include <renderer.h>
+#include <shaderManager.h>
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
-#include <GRID/textureManager.h>
-#include <GRID/tiffLoader.h>
+#include <textureManager.h>
+#include <tiffLoader.h>
+#include <glm_convert.h>
 
 Renderer renderer = Renderer();
 
@@ -57,7 +58,7 @@ void Renderer::createRenderTexture() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    textureManager.createTexture("renderTexture", 0, 0, TEXTURE_FORMAT::RGBA32F, 0);
+    textureManager.createTexture("renderTexture", 0, 0, GRID_TEXTUREFORMAT::RGBA32F, 0);
 }
 
 void Renderer::loadShaders() {
@@ -88,10 +89,10 @@ void Renderer::init() {
     setQuadBufferData();
     createRenderTexture();
     loadShaders();
-    camera = new Camera(1, 1);
+    camera = new GRID_Camera(1, 1);
 }
 
-Camera* Renderer::getCamera() {
+GRID_Camera* Renderer::getCamera() {
     return camera;
 }
 
@@ -103,7 +104,7 @@ void Renderer::render() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	program.use();
-    glm::mat4 mvp = camera->getProjectionMatrix() * camera->getViewMatrix() * quad->getModelMatrix();
+    glm::mat4 mvp = toGLM(camera->getProjectionMatrix()) * toGLM(camera->getViewMatrix()) * quad->getModelMatrix();
     program.setUniform("mvp", mvp);
     program.setTexture("renderTexture", "renderTexture");
     

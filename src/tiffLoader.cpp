@@ -1,4 +1,4 @@
-#include <GRID/tiffLoader.h>
+#include <tiffLoader.h>
 #include <tinytiffreader.h>
 #include <iostream>
 
@@ -30,7 +30,7 @@ uint32_t Tiff::getSamplesPerPixel() {
     return samplesPerPixel;
 }
 
-TIFF_SAMPLEFORMAT Tiff::getSampleFormat() {
+GRID_TIFFFORMAT Tiff::getSampleFormat() {
     return sampleFormat;
 }
 
@@ -44,7 +44,7 @@ void Tiff::load(std::string filePath) {
         height = TinyTIFFReader_getHeight(tiffr);
         bitsPerSample = TinyTIFFReader_getBitsPerSample(tiffr, 0);
         samplesPerPixel = TinyTIFFReader_getSamplesPerPixel(tiffr);
-        sampleFormat = (TIFF_SAMPLEFORMAT)TinyTIFFReader_getSampleFormat(tiffr);
+        sampleFormat = (GRID_TIFFFORMAT)TinyTIFFReader_getSampleFormat(tiffr);
 
         image = (uint8_t*)calloc(width * height * samplesPerPixel, bitsPerSample / 8);  
         if (!TinyTIFFReader_getSampleData(tiffr, image, 0)) {

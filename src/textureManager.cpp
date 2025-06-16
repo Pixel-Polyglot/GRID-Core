@@ -1,4 +1,4 @@
-#include <GRID/textureManager.h>
+#include <textureManager.h>
 #include <iostream>
 #include <tinytiffwriter.h>
 
@@ -10,7 +10,7 @@ TextureManager::TextureManager() {
 TextureManager::~TextureManager() {
 }
 
-GLuint TextureManager::writeTexture(std::string name, int width, int height, TEXTURE_FORMAT format, int* data) {
+GLuint TextureManager::writeTexture(std::string name, int width, int height, GRID_TEXTUREFORMAT format, int* data) {
     if (textures.find(name) == textures.end()) {
         std::cout << "Texture with name: " << name << " doesn't exists" << std::endl;
         return 0;
@@ -22,57 +22,57 @@ GLuint TextureManager::writeTexture(std::string name, int width, int height, TEX
     int pixelType;
     int elementType;
     switch (format) {
-        case TEXTURE_FORMAT::R8:
+        case GRID_TEXTUREFORMAT::R8:
             layout = GL_R8;
             pixelType = GL_RED;
             elementType = GL_UNSIGNED_BYTE;
             break;
-        case TEXTURE_FORMAT::R8UI:
+        case GRID_TEXTUREFORMAT::R8UI:
             layout = GL_R8UI;
             pixelType = GL_RED_INTEGER;
             elementType = GL_UNSIGNED_BYTE;
             break;
-        case TEXTURE_FORMAT::RGBA8:
+        case GRID_TEXTUREFORMAT::RGBA8:
             layout = GL_RGBA8;
             pixelType = GL_RGBA;
             elementType = GL_UNSIGNED_BYTE;
             break;
-        case TEXTURE_FORMAT::RGBA8UI:
+        case GRID_TEXTUREFORMAT::RGBA8UI:
             layout = GL_RGBA8UI;
             pixelType = GL_RGBA_INTEGER;
             elementType = GL_UNSIGNED_BYTE;
             break;
-        case TEXTURE_FORMAT::RGBA16F:
+        case GRID_TEXTUREFORMAT::RGBA16F:
             layout = GL_RGBA16F;
             pixelType = GL_RGBA;
             elementType = GL_HALF_FLOAT;
             break;
-        case TEXTURE_FORMAT::RGBA16UI:
+        case GRID_TEXTUREFORMAT::RGBA16UI:
             layout = GL_RGBA16UI;
             pixelType = GL_RGBA_INTEGER;
             elementType = GL_UNSIGNED_SHORT;
             break;
-        case TEXTURE_FORMAT::R16F:
+        case GRID_TEXTUREFORMAT::R16F:
             layout = GL_R16F;
             pixelType = GL_RED;
             elementType = GL_HALF_FLOAT;
             break;
-        case TEXTURE_FORMAT::R16UI:
+        case GRID_TEXTUREFORMAT::R16UI:
             layout = GL_R16UI;
             pixelType = GL_RED_INTEGER;
             elementType = GL_UNSIGNED_SHORT;
             break;
-        case TEXTURE_FORMAT::RGBA32F:
+        case GRID_TEXTUREFORMAT::RGBA32F:
             layout = GL_RGBA32F;
             pixelType = GL_RGBA;
             elementType = GL_FLOAT;
             break;
-        case TEXTURE_FORMAT::R32UI:
+        case GRID_TEXTUREFORMAT::R32UI:
             layout = GL_R32UI;
             pixelType = GL_RED_INTEGER;
             elementType = GL_UNSIGNED_INT;
             break;
-        case TEXTURE_FORMAT::RGBA32UI:
+        case GRID_TEXTUREFORMAT::RGBA32UI:
             layout = GL_RGBA32UI;
             pixelType = GL_RGBA_INTEGER;
             elementType = GL_UNSIGNED_INT;
@@ -97,7 +97,7 @@ void TextureManager::setTexture(std::string name, GLuint texture) {
     textures[name] = texture;
 }
 
-GLuint TextureManager::createTexture(std::string name, int width, int height, TEXTURE_FORMAT format, int* data) {
+GLuint TextureManager::createTexture(std::string name, int width, int height, GRID_TEXTUREFORMAT format, int* data) {
     if (textures.find(name) != textures.end()) {
         std::cout << "Texture with name: " << name << " already exists" << std::endl;
         return 0;
@@ -122,7 +122,7 @@ GLuint TextureManager::getTexture(std::string name) {
     return textures[name];
 }
 
-GLuint TextureManager::loadFromTiff(Tiff &tiff, std::string name) {
+GLuint TextureManager::loadFromTiff(GRID_Tiff &tiff, std::string name) {
     if (textures.find(name) != textures.end()) {
         std::cout << "Texture with name: " << name << " already exists" << std::endl;
         return 0;
@@ -133,7 +133,7 @@ GLuint TextureManager::loadFromTiff(Tiff &tiff, std::string name) {
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    if (tiff.getSampleFormat() == TIFF_SAMPLEFORMAT::TIFF_UINT) {
+    if (tiff.getSampleFormat() == GRID_TIFFFORMAT::TIFF_UINT) {
         if (tiff.getBitsPerSample() == 16) {
             if (tiff.getSamplesPerPixel() == 3) {
                 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16UI, tiff.getWidth(), tiff.getHeight(), 0, GL_RGB_INTEGER, GL_UNSIGNED_SHORT, tiff.getImage());
@@ -159,7 +159,7 @@ GLuint TextureManager::loadFromTiff(Tiff &tiff, std::string name) {
     return texture;
 }
 
-void TextureManager::saveTextureToFile(std::string textureName, std::string fileName, int width, int height, TEXTURE_FORMAT format, int sizeX, int sizeY, int offsetX, int offsetY) {
+void TextureManager::saveTextureToFile(std::string textureName, std::string fileName, int width, int height, GRID_TEXTUREFORMAT format, int sizeX, int sizeY, int offsetX, int offsetY) {
     if (sizeX == 0) {
         sizeX = width;
     }
@@ -179,7 +179,7 @@ void TextureManager::saveTextureToFile(std::string textureName, std::string file
     void* pixels = nullptr;
 
     switch (format) {
-            case TEXTURE_FORMAT::R8:
+            case GRID_TEXTUREFORMAT::R8:
             pixelType = GL_RED;
             elementType = GL_UNSIGNED_BYTE;
             bits = 8;
@@ -188,7 +188,7 @@ void TextureManager::saveTextureToFile(std::string textureName, std::string file
             channels = 1;
             pixels = malloc(sizeof(uint8_t)*width*height);
             break;
-        case TEXTURE_FORMAT::R8UI:
+        case GRID_TEXTUREFORMAT::R8UI:
             pixelType = GL_RED_INTEGER;
             elementType = GL_UNSIGNED_BYTE;
             bits = 8;
@@ -197,7 +197,7 @@ void TextureManager::saveTextureToFile(std::string textureName, std::string file
             channels = 1;
             pixels = malloc(sizeof(uint8_t)*width*height);
             break;
-        case TEXTURE_FORMAT::RGBA8:
+        case GRID_TEXTUREFORMAT::RGBA8:
             pixelType = GL_RGBA;
             elementType = GL_UNSIGNED_BYTE;
             bits = 8;
@@ -206,7 +206,7 @@ void TextureManager::saveTextureToFile(std::string textureName, std::string file
             channels = 4;
             pixels = malloc(sizeof(uint8_t)*width*height*4);
             break;
-        case TEXTURE_FORMAT::RGBA8UI:
+        case GRID_TEXTUREFORMAT::RGBA8UI:
             pixelType = GL_RGBA_INTEGER;
             elementType = GL_UNSIGNED_BYTE;
             bits = 8;
@@ -215,7 +215,7 @@ void TextureManager::saveTextureToFile(std::string textureName, std::string file
             channels = 4;
             pixels = malloc(sizeof(uint8_t)*width*height*4);
             break;
-        case TEXTURE_FORMAT::RGBA16F:
+        case GRID_TEXTUREFORMAT::RGBA16F:
             pixelType = GL_RGBA;
             elementType = GL_HALF_FLOAT;
             bits = 16;
@@ -224,7 +224,7 @@ void TextureManager::saveTextureToFile(std::string textureName, std::string file
             channels = 4;
             pixels = malloc(sizeof(uint16_t)*width*height*4);
             break;
-        case TEXTURE_FORMAT::RGBA16UI:
+        case GRID_TEXTUREFORMAT::RGBA16UI:
             pixelType = GL_RGBA_INTEGER;
             elementType = GL_UNSIGNED_SHORT;
             bits = 16;
@@ -233,7 +233,7 @@ void TextureManager::saveTextureToFile(std::string textureName, std::string file
             channels = 4;
             pixels = malloc(sizeof(uint16_t)*width*height*4);
             break;
-        case TEXTURE_FORMAT::R16F:
+        case GRID_TEXTUREFORMAT::R16F:
             pixelType = GL_RED;
             elementType = GL_HALF_FLOAT;
             bits = 16;
@@ -242,7 +242,7 @@ void TextureManager::saveTextureToFile(std::string textureName, std::string file
             channels = 1;
             pixels = malloc(sizeof(uint16_t)*width*height);
             break;
-        case TEXTURE_FORMAT::R16UI:
+        case GRID_TEXTUREFORMAT::R16UI:
             pixelType = GL_RED_INTEGER;
             elementType = GL_UNSIGNED_SHORT;
             bits = 16;
@@ -251,7 +251,7 @@ void TextureManager::saveTextureToFile(std::string textureName, std::string file
             channels = 1;
             pixels = malloc(sizeof(uint16_t)*width*height);
             break;
-        case TEXTURE_FORMAT::RGBA32F:
+        case GRID_TEXTUREFORMAT::RGBA32F:
             pixelType = GL_RGBA;
             elementType = GL_FLOAT;
             bits = 32;
@@ -260,7 +260,7 @@ void TextureManager::saveTextureToFile(std::string textureName, std::string file
             channels = 4;
             pixels = malloc(sizeof(uint32_t)*width*height*4);
             break;
-        case TEXTURE_FORMAT::R32UI:
+        case GRID_TEXTUREFORMAT::R32UI:
             pixelType = GL_RED_INTEGER;
             elementType = GL_UNSIGNED_INT;
             bits = 32;
@@ -269,7 +269,7 @@ void TextureManager::saveTextureToFile(std::string textureName, std::string file
             channels = 1;
             pixels = malloc(sizeof(uint32_t)*width*height);
             break;
-        case TEXTURE_FORMAT::RGBA32UI:
+        case GRID_TEXTUREFORMAT::RGBA32UI:
             pixelType = GL_RGBA_INTEGER;
             elementType = GL_UNSIGNED_INT;
             bits = 32;

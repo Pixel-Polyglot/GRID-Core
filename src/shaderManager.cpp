@@ -1,4 +1,4 @@
-#include "GRID/shaderManager.h"
+#include "shaderManager.h"
 
 ShaderManager shaderManager = ShaderManager();
 

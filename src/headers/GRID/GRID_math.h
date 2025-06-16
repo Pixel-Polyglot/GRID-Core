@@ -2,6 +2,16 @@
 
 #include "export.h"
 
+struct GRID_Vec2f;
+struct GRID_Vec2i;
+struct GRID_Vec3f;
+struct GRID_Vec3i;
+struct GRID_Vec4f;
+struct GRID_Vec4i;
+struct GRID_Mat2;
+struct GRID_Mat3;
+struct GRID_Mat4;
+
 #define OPS(typeSelf) \
     typeSelf operator+(const typeSelf& other) const; \
     typeSelf operator-(const typeSelf& other) const; \
@@ -44,7 +54,6 @@ struct EXPORT GRID_Vec2i {
     GRID_Vec2i(int x_, int y_) : x(x_), y(y_) {}
     ITERATOR_OP(int, x)
     OPS(GRID_Vec2i)
-    VECTOR_FUNCS(GRID_Vec2i)
 };
 
 struct EXPORT GRID_Vec3f {
@@ -62,7 +71,6 @@ struct EXPORT GRID_Vec3i {
     GRID_Vec3i(int x_, int y_, int z_) : x(x_), y(y_), z(z_) {}
     ITERATOR_OP(int, x)
     OPS(GRID_Vec3i)
-    VECTOR_FUNCS(GRID_Vec3i)
 };
 
 struct EXPORT GRID_Vec4f {
@@ -79,7 +87,6 @@ struct EXPORT GRID_Vec4i {
     GRID_Vec4i(int x_, int y_, int z_, int w_) : x(x_), y(y_), z(z_), w(w_) {}
     ITERATOR_OP(int, x)
     OPS(GRID_Vec4i)
-    VECTOR_FUNCS(GRID_Vec4i)
 };
 
 struct EXPORT GRID_Mat2 {

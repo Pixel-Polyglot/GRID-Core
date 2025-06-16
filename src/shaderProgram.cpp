@@ -1,5 +1,5 @@
-#include <GRID/shaderProgram.h>
-#include <GRID/shaderManager.h>
+#include <shaderProgram.h>
+#include <shaderManager.h>
 
 void ShaderProgram::createSsbo(std::string name, int size) {
     GLuint ssbo;
@@ -116,40 +116,40 @@ void RenderProgram::setTexture(std::string shaderName, std::string value) {
     textureIndex += 1;
 }
 
-void ComputeProgram::setImage(std::string shaderName, std::string value, TEXTURE_FORMAT format) {
+void ComputeProgram::setImage(std::string shaderName, std::string value, GRID_TEXTUREFORMAT format) {
     int imageType;
     switch (format) {
-        case TEXTURE_FORMAT::R8:
+        case GRID_TEXTUREFORMAT::R8:
             imageType = GL_R8;
             break;        
-        case TEXTURE_FORMAT::R8UI:
+        case GRID_TEXTUREFORMAT::R8UI:
             imageType = GL_R8UI;
             break;
-        case TEXTURE_FORMAT::R16UI:
+        case GRID_TEXTUREFORMAT::R16UI:
             imageType = GL_R16UI;
             break;
-        case TEXTURE_FORMAT::RGBA8:
+        case GRID_TEXTUREFORMAT::RGBA8:
             imageType = GL_RGBA8;
             break;
-        case TEXTURE_FORMAT::RGBA8UI:
+        case GRID_TEXTUREFORMAT::RGBA8UI:
             imageType = GL_RGBA8UI;
             break;
-        case TEXTURE_FORMAT::RGBA16F:
+        case GRID_TEXTUREFORMAT::RGBA16F:
             imageType = GL_RGBA16F;
             break;
-        case TEXTURE_FORMAT::R16F:
+        case GRID_TEXTUREFORMAT::R16F:
             imageType = GL_R16F;
             break;
-        case TEXTURE_FORMAT::RGBA16UI:
+        case GRID_TEXTUREFORMAT::RGBA16UI:
             imageType = GL_RGBA16UI;
             break;
-        case TEXTURE_FORMAT::RGBA32F:
+        case GRID_TEXTUREFORMAT::RGBA32F:
             imageType = GL_RGBA32F;
             break;
-        case TEXTURE_FORMAT::R32UI:
+        case GRID_TEXTUREFORMAT::R32UI:
             imageType = GL_R32UI;
             break;
-        case TEXTURE_FORMAT::RGBA32UI:
+        case GRID_TEXTUREFORMAT::RGBA32UI:
             imageType = GL_RGBA32UI;
             break;
         default:
