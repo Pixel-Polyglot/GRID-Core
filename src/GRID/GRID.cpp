@@ -89,6 +89,7 @@ while (!glfwWindowShouldClose(window.getWindow())) {
   appRun();
   ui.render();
   glfwSwapBuffers(window.getWindow());
+  window.setDeltaTime();
 }
 
 appDestroy();

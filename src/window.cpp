@@ -61,6 +61,12 @@ void Window::enableVsync(bool enable) {
     glfwSwapInterval(enable);
 }
 
+void Window::setDeltaTime() {
+    double currentTime = glfwGetTime();
+    deltaTime = currentTime - lastTime;
+    lastTime = currentTime;
+}
+
 double Window::getDeltaTime() {
-    return glfwGetTime();
+    return deltaTime;
 }

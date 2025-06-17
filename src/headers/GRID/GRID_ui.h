@@ -8,7 +8,7 @@ class EXPORT GRID_UI {
 public:
     static void addWidget(GRID_Widget* widget);
 
-    static void begin(const char* name);
+    static void begin(const char* name, bool padding = true);
     static void end();
 
     static void text(const char* fmt, ...);
@@ -22,4 +22,7 @@ public:
     static bool isWindowHovered();
 
     static GRID_Vec2f getContentRegionAvail();
+
+private:
+    static inline int styles;
 };

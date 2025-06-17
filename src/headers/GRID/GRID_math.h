@@ -37,8 +37,8 @@ struct GRID_Mat4;
     float determinant() const;
 
 #define ITERATOR_OP(elementType, firstElement) \
-    elementType& operator[](int index) { return *(&##firstElement + index); } \
-    const elementType& operator[](int index) const { return *(&##firstElement + index); }
+    elementType& operator[](int index) { return *((&firstElement) + index); } \
+    const elementType& operator[](int index) const { return *((&firstElement) + index); }
 
 struct EXPORT GRID_Vec2f {
     float x, y;

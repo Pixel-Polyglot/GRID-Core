@@ -12,8 +12,13 @@ public:
     GLFWwindow* getWindow();
     void enableVsync(bool enable);
     double getDeltaTime();
+    void setDeltaTime();
 
     GLFWwindow* window;
+    
+private:
+    double lastTime;
+    double deltaTime;
 };
 
 extern Window window;

@@ -10,10 +10,14 @@ bool GRID_UI::isWindowHovered() {
     return ImGui::IsWindowHovered();
 }
 
-void GRID_UI::begin(const char* name) {
+void GRID_UI::begin(const char* name, bool padding) {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    styles = 2;
+    if (!padding) {
+    	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+        styles += 1;
+    }
 
     ImGui::Begin(name, nullptr);
 }
@@ -21,7 +25,7 @@ void GRID_UI::begin(const char* name) {
 void GRID_UI::end() {
     ImGui::End();
 
-    ImGui::PopStyleVar(3);
+    ImGui::PopStyleVar(styles);
 }
 
 void GRID_UI::text(const char* fmt, ...) {
