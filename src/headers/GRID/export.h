@@ -19,10 +19,10 @@
 	#include <dlfcn.h>
 	#define HMODULE void*
 	#ifdef EXPORT_SHARED
-		#define EXPORT "C" __attribute__((visibility("default")))
+		#define EXPORT __attribute__((visibility("default")))
 		#define EXPORT_FUNCTION extern "C" __attribute__((visibility("default")))
 	#else
 		#define EXPORT
-		#define EXPORT_FUNCTION extern "C"
+		#define EXPORT_FUNCTION
 	#endif
 #endif

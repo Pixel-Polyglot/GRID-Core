@@ -22,6 +22,7 @@ else()
     set(CMAKE_CXX_FLAGS_DEBUG "-g")
 endif()
 
+add_compile_options(-fvisibility=hidden)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 add_definitions(-DEXPORT_SHARED)
 # set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)

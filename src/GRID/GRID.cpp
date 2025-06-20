@@ -42,58 +42,61 @@ extern "C" void start(const char *jsonPath, int argc, char *argv[]) {
   #endif
 
   if (hAppLib == nullptr) {
-  #ifdef _WIN32
-    std::cout << "Failed to load application library" << std::endl;
-  #else
-    std::cout << "Failed to load application library: " << dlerror() << std::endl;
-  #endif
-}
+    #ifdef _WIN32
+      LPSTR msg = nullptr;
+      FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, nullptr, GetLastError(), 0, (LPSTR)&msg, 0, nullptr);
+      std::cerr << "Failed to load library: " << appPath << "\n" << "Windows error: " << (msg ? msg : "Unknown error") << std::endl;
+      LocalFree(msg);
+    #else
+      std::cout << "Failed to load library: " << dlerror() << " " << appPath.c_str() << std::endl;
+    #endif
+  }
 
-AppFuncInit appInit = (AppFuncInit)dlsym(hAppLib, "init");
-AppFunc appRun = (AppFunc)dlsym(hAppLib, "run");
-AppFunc appDestroy = (AppFunc)dlsym(hAppLib, "destroy");
-AppFunc appSetWidgets = (AppFunc)dlsym(hAppLib, "setWidgets");
+  AppFuncInit appInit = (AppFuncInit)dlsym(hAppLib, "init");
+  AppFunc appRun = (AppFunc)dlsym(hAppLib, "run");
+  AppFunc appDestroy = (AppFunc)dlsym(hAppLib, "destroy");
+  AppFunc appSetWidgets = (AppFunc)dlsym(hAppLib, "setWidgets");
 
-if (appInit == nullptr) {
-  std::cout << "Failed to load function: init" << std::endl;
-}
+  if (appInit == nullptr) {
+    std::cout << "Failed to load function: init" << std::endl;
+  }
 
-if (appRun == nullptr) {
-  std::cout << "Failed to load function: run" << std::endl;
-}
+  if (appRun == nullptr) {
+    std::cout << "Failed to load function: run" << std::endl;
+  }
 
-if (appDestroy == nullptr) {
-  std::cout << "Failed to load function: destroy" << std::endl;
-}
+  if (appDestroy == nullptr) {
+    std::cout << "Failed to load function: destroy" << std::endl;
+  }
 
-if (appSetWidgets == nullptr) {
-  std::cout << "Failed to load function: setWidgets" << std::endl;
-}
+  if (appSetWidgets == nullptr) {
+    std::cout << "Failed to load function: setWidgets" << std::endl;
+  }
 
-// std::cout << "GRID Application v" << appGetVersionMajor() << "." <<
-// appGetVersionMinor() << std::endl;
-std::cout << data["name"].get<std::string>() << std::endl;
+  // std::cout << "GRID Application v" << appGetVersionMajor() << "." <<
+  // appGetVersionMinor() << std::endl;
+  std::cout << data["name"].get<std::string>() << std::endl;
 
-window.init("GPU", 800, 600, 4, 5);
-window.enableVsync(true);
+  window.init("GPU", 800, 600, 4, 5);
+  window.enableVsync(true);
 
-ui.init(window.getWindow(), 4, 5);
-renderer.init();
+  ui.init(window.getWindow(), 4, 5);
+  renderer.init();
 
-appInit(argc, argv);
+  appInit(argc, argv);
 
-appSetWidgets();
+  appSetWidgets();
 
-while (!glfwWindowShouldClose(window.getWindow())) {
-  glfwPollEvents();
-  appRun();
-  ui.render();
-  glfwSwapBuffers(window.getWindow());
-  window.setDeltaTime();
-}
+  while (!glfwWindowShouldClose(window.getWindow())) {
+    glfwPollEvents();
+    appRun();
+    ui.render();
+    glfwSwapBuffers(window.getWindow());
+    window.setDeltaTime();
+  }
 
-appDestroy();
-renderer.destroy();
-ui.destroy();
-window.destroy();
+  appDestroy();
+  renderer.destroy();
+  ui.destroy();
+  window.destroy();
 }
