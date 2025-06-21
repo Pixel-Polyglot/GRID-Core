@@ -34,7 +34,7 @@ void UI::init(GLFWwindow* window, int ogl_version_major, int ogl_version_minor) 
     ImGui::CreateContext();
     ImPlot::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
-    static std::string iniPath = settings.getSetting<std::string>("guiConfig");
+    static std::string iniPath = settings.getRelativePath() + "/" + settings.getSetting<std::string>("guiConfig");
 	io.IniFilename = iniPath.c_str();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
