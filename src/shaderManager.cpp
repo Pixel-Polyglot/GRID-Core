@@ -1,7 +1,7 @@
 #include "shaderManager.h"
 #include <cstring>
 
-ShaderManager shaderManager = ShaderManager();
+ShaderManager shaderManager;
 
 ShaderManager::ShaderManager() {
 }

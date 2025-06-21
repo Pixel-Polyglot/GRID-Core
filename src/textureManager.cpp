@@ -3,7 +3,7 @@
 #include <tinytiffwriter.h>
 #include "glm_convert.h"
 
-TextureManager textureManager = TextureManager();
+TextureManager textureManager;
 
 TextureManager::TextureManager() {
 }

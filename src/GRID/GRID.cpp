@@ -7,9 +7,7 @@
 #include <fstream>
 #include <limits.h>
 #include <GRID/export.h>
-#include <nlohmann/json.hpp>
-#include <string>
-using json = nlohmann::json;
+#include <settings.h>
 
 using AppFunc = void (*)();
 using AppFuncInit = void (*)(int atgc, char *argv[]);
@@ -18,21 +16,9 @@ using AppFuncVersion = int (*)();
 extern "C" void start(const char *jsonPath, int argc, char *argv[]) {
   std::cout << "GRID Core v" << getVersionMajor() << "." << getVersionMinor() << std::endl;
 
-  char cwd[PATH_MAX];
-  getcwd(cwd, sizeof(cwd));
+  settings.loadSettings(jsonPath);
 
-  std::ifstream f(jsonPath);
-  json data;
-  // try {
-  data = json::parse(f);
-/*
- catch (const json::parse_error& e) {
-         std::cout << "Invalid JSON config: " << jsonPath << std::endl;
-         return;
- }*/
-
-  std::string appPath = std::string(cwd) + "/" +
-  data["applicationLib"].get<std::string>();
+  std::string appPath = settings.getRelativePath() + "/" + settings.getSetting<std::string>("applicationLib");
 
   #ifdef _WIN32
     HMODULE hAppLib = LoadLibrary(appPath.c_str());
@@ -74,7 +60,7 @@ extern "C" void start(const char *jsonPath, int argc, char *argv[]) {
 
   // std::cout << "GRID Application v" << appGetVersionMajor() << "." <<
   // appGetVersionMinor() << std::endl;
-  std::cout << data["name"].get<std::string>() << std::endl;
+  std::cout << settings.getSetting<std::string>("name") << std::endl;
 
   window.init("GPU", glm::ivec2(800, 600), 4, 5);
   window.enableVsync(true);

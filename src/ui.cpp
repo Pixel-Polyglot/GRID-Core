@@ -8,8 +8,9 @@
 #include <window.h>
 #include <implot.h>
 #include <string>
+#include <settings.h>
 
-UI ui = UI();
+UI ui;
 
 UI::UI() {
 }
@@ -33,7 +34,8 @@ void UI::init(GLFWwindow* window, int ogl_version_major, int ogl_version_minor) 
     ImGui::CreateContext();
     ImPlot::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
-	io.IniFilename = "../ImGui.ini";
+    static std::string iniPath = settings.getSetting<std::string>("guiConfig");
+	io.IniFilename = iniPath.c_str();
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	

@@ -2,7 +2,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-Window window = Window();
+Window window;
 
 Window::Window() {
 }
