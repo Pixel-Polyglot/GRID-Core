@@ -2,7 +2,6 @@
 #include <version.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <renderer.h>
 #include <ui.h>
 #include <window.h>
 #include <fstream>
@@ -77,11 +76,10 @@ extern "C" void start(const char *jsonPath, int argc, char *argv[]) {
   // appGetVersionMinor() << std::endl;
   std::cout << data["name"].get<std::string>() << std::endl;
 
-  window.init("GPU", 800, 600, 4, 5);
+  window.init("GPU", glm::ivec2(800, 600), 4, 5);
   window.enableVsync(true);
 
   ui.init(window.getWindow(), 4, 5);
-  renderer.init();
 
   appInit(argc, argv);
 
@@ -96,7 +94,6 @@ extern "C" void start(const char *jsonPath, int argc, char *argv[]) {
   }
 
   appDestroy();
-  renderer.destroy();
   ui.destroy();
   window.destroy();
 }

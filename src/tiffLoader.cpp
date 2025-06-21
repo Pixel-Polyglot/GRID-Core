@@ -2,52 +2,48 @@
 #include <tinytiffreader.h>
 #include <iostream>
 
-Tiff::Tiff(std::string filePath) {
+Tiff::Tiff(const char* filePath) {
     load(filePath);
 }
 
 Tiff::~Tiff() {
-    free(image);
+    free(m_image);
 }
 
 uint8_t* Tiff::getImage() {
-    return image;
+    return m_image;
 }
 
-uint32_t Tiff::getWidth() {
-    return width;
+glm::ivec2 Tiff::getResolution() {
+    return m_resolution;
 }
 
-uint32_t Tiff::getHeight() {
-    return height;
+unsigned int Tiff::getBitsPerSample() {
+    return m_bitsPerSample;
 }
 
-uint32_t Tiff::getBitsPerSample() {
-    return bitsPerSample;
-}
-
-uint32_t Tiff::getSamplesPerPixel() {
-    return samplesPerPixel;
+unsigned int Tiff::getSamplesPerPixel() {
+    return m_samplesPerPixel;
 }
 
 GRID_TIFFFORMAT Tiff::getSampleFormat() {
-    return sampleFormat;
+    return m_sampleFormat;
 }
 
-void Tiff::load(std::string filePath) {
+void Tiff::load(const char* filePath) {
     TinyTIFFReaderFile* tiffr = NULL;
-    tiffr = TinyTIFFReader_open(filePath.c_str()); 
+    tiffr = TinyTIFFReader_open(filePath); 
     if (!tiffr) { 
-        std::cout << "Tiff file:" << filePath.c_str() << " not existent, not accessible or not a TIFF file)" << std::endl; 
+        std::cout << "Tiff file:" << filePath << " not existent, not accessible or not a TIFF file)" << std::endl; 
     } else { 
-        width = TinyTIFFReader_getWidth(tiffr);
-        height = TinyTIFFReader_getHeight(tiffr);
-        bitsPerSample = TinyTIFFReader_getBitsPerSample(tiffr, 0);
-        samplesPerPixel = TinyTIFFReader_getSamplesPerPixel(tiffr);
-        sampleFormat = (GRID_TIFFFORMAT)TinyTIFFReader_getSampleFormat(tiffr);
+        m_resolution.x = TinyTIFFReader_getWidth(tiffr);
+        m_resolution.y = TinyTIFFReader_getHeight(tiffr);
+        m_bitsPerSample = TinyTIFFReader_getBitsPerSample(tiffr, 0);
+        m_samplesPerPixel = TinyTIFFReader_getSamplesPerPixel(tiffr);
+        m_sampleFormat = (GRID_TIFFFORMAT)TinyTIFFReader_getSampleFormat(tiffr);
 
-        image = (uint8_t*)calloc(width * height * samplesPerPixel, bitsPerSample / 8);  
-        if (!TinyTIFFReader_getSampleData(tiffr, image, 0)) {
+        m_image = (uint8_t*)calloc(m_resolution.x * m_resolution.y * m_samplesPerPixel, m_bitsPerSample / 8);  
+        if (!TinyTIFFReader_getSampleData(tiffr, m_image, 0)) {
             std::cout << TinyTIFFReader_getLastError(tiffr) << std::endl;
         }
     } 

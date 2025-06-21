@@ -4,20 +4,21 @@
 #include <glad/glad.h>
 #include <unordered_map>
 #include <GRID/GRID_textureFormat.h>
+#include <glm/glm.hpp>
 
 class TextureManager {
 public:
     TextureManager();
     ~TextureManager();
-    GLuint writeTexture(std::string name, int width, int height, GRID_TEXTUREFORMAT format, int* data = 0);
-    GLuint loadFromTiff(GRID_Tiff &tiff, std::string name);
-    GLuint createTexture(std::string name, int width, int height, GRID_TEXTUREFORMAT format, int* data = 0);
-    GLuint getTexture(std::string name);
-    void saveTextureToFile(std::string textureName, std::string fileName, int width, int height, GRID_TEXTUREFORMAT format, int sizeX = 0, int sizeY = 0, int offsetX = 0, int offsetY = 0);
-    void setTexture(std::string name, GLuint texture);
+    GLuint writeTexture(const char* name, glm::ivec2 resolution, GRID_TEXTUREFORMAT format, int* data = 0);
+    GLuint loadFromTiff(GRID_Tiff &tiff, const char* name);
+    GLuint createTexture(const char* name, glm::ivec2 resolution, GRID_TEXTUREFORMAT format, int* data = 0);
+    GLuint getTexture(const char* name);
+    void saveTextureToFile(const char* textureName, const char* fileName, glm::ivec2 textureResolution, GRID_TEXTUREFORMAT format);
+    void setTexture(const char* name, GLuint texture);
 
 private:
-    std::unordered_map<std::string, GLuint> textures;
+    std::unordered_map<const char*, GLuint> m_textures;
 };
 
 extern TextureManager textureManager;

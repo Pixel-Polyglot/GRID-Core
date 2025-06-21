@@ -3,14 +3,14 @@
 #include "export.h"
 #include "GRID_textureFormat.h"
 #include "GRID_tiff.h"
-#include <string>
+#include "GRID_math.h"
 
 class EXPORT GRID_Textures {
 public:
-    static unsigned int writeTexture(std::string name, int width, int height, GRID_TEXTUREFORMAT format, int* data = 0);
-    static unsigned int loadFromTiff(GRID_Tiff &tiff, std::string name);
-    static unsigned int createTexture(std::string name, int width, int height, GRID_TEXTUREFORMAT format, int* data = 0);
-    static unsigned int getTexture(std::string name);
-    static void saveTextureToFile(std::string textureName, std::string fileName, int width, int height, GRID_TEXTUREFORMAT format, int sizeX=0, int sizeY=0, int offsetX=0, int offsetY=0);
-    static void setTexture(std::string name, unsigned int texture);
+    static unsigned int writeTexture(const char* name, GRID_Vec2i resolution, GRID_TEXTUREFORMAT format, int* data = 0);
+    static unsigned int loadFromTiff(GRID_Tiff &tiff, const char* name);
+    static unsigned int createTexture(const char* name, GRID_Vec2i resolution, GRID_TEXTUREFORMAT format, int* data = 0);
+    static unsigned int getTexture(const char* name);
+    static void saveTextureToFile(const char* textureName, const char* fileName, GRID_Vec2i textureResolution, GRID_TEXTUREFORMAT format);
+    static void setTexture(const char* name, unsigned int texture);
 };

@@ -14,7 +14,7 @@ public:
     void destroy();
 
 private:
-    std::vector<GRID_Widget*> widgets;
+    std::vector<GRID_Widget*> m_widgets;
 };
 
 extern UI ui;

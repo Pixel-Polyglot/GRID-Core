@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <glm/glm.hpp>
 
 struct GLFWwindow;
 
@@ -8,7 +9,7 @@ public:
     Window();
     ~Window();
     void destroy();
-    void init(std::string name, int width, int height, int ogl_version_major, int ogl_version_minor);
+    void init(const char* name, glm::ivec2 size, int ogl_version_major, int ogl_version_minor);
     GLFWwindow* getWindow();
     void enableVsync(bool enable);
     double getDeltaTime();
@@ -17,8 +18,8 @@ public:
     GLFWwindow* window;
     
 private:
-    double lastTime;
-    double deltaTime;
+    double m_lastTime;
+    double m_deltaTime;
 };
 
 extern Window window;

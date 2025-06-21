@@ -3,15 +3,27 @@
 #include "export.h"
 #include "GRID_camera.h"
 
+class Renderer;
+
 class EXPORT GRID_Renderer {
 public:
-    static void resize(int prevWidth, int prevHeight, int width, int height);
-    static void render();
+    GRID_Renderer();
+    ~GRID_Renderer();
 
-    static void setResolution(unsigned int width, unsigned int height);
-    static void getResolution(unsigned int &width, unsigned int &height);
+    void init(const char* textureName);
+    void destroy();
 
-    static GRID_Camera* getCamera();
+    void resize(GRID_Vec2i prevResolution, GRID_Vec2i resolution);
+    void render();
 
-    static unsigned int getGuiTexture();
+    void setResolution(GRID_Vec2i resolution);
+    GRID_Vec2i getResolution();
+
+    GRID_Camera* getCamera();
+
+    unsigned int getGuiTexture();
+    const char* getTextureName();
+
+private:
+    Renderer* m_renderer;
 };

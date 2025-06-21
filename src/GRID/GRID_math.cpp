@@ -14,6 +14,17 @@ auto selfType::operator op(const selfType& other) -> decltype(fromGLM(toGLM(*thi
     return *this; \
 }
 
+#define OP_FLOAT_IMPL(selfType, op) \
+auto selfType::operator op(const float& other) const -> decltype(fromGLM(toGLM(*this) op other)) { \
+    return fromGLM(toGLM(*this) op other); \
+}
+
+#define OP_FLOAT_REF_IMPL(selfType, op) \
+auto selfType::operator op(const float& other) -> decltype(fromGLM(toGLM(*this) op other)) { \
+    *this = fromGLM(toGLM(*this) op other); \
+    return *this; \
+}
+
 #define OPS_IMPL(selfType) \
 OP_IMPL(selfType, +) \
 OP_IMPL(selfType, -) \
@@ -24,7 +35,17 @@ OP_REF_IMPL(selfType, -=) \
 OP_REF_IMPL(selfType, *=) \
 OP_REF_IMPL(selfType, /=) \
 OP_IMPL(selfType, ==) \
-OP_IMPL(selfType, !=)
+OP_IMPL(selfType, !=) 
+
+#define OPS_FLOAT_IMPL(selfType) \
+OP_FLOAT_IMPL(selfType, +) \
+OP_FLOAT_IMPL(selfType, -) \
+OP_FLOAT_IMPL(selfType, *) \
+OP_FLOAT_IMPL(selfType, /) \
+OP_FLOAT_REF_IMPL(selfType, +=) \
+OP_FLOAT_REF_IMPL(selfType, -=) \
+OP_FLOAT_REF_IMPL(selfType, *=) \
+OP_FLOAT_REF_IMPL(selfType, /=)
 
 #define FUNC1(selfType, func) \
 auto selfType::func() const -> decltype(fromGLM(glm::func(toGLM(*this)))) { \
@@ -52,21 +73,27 @@ FUNC2(selfType, matrixCompMult, selfType)
 #define VECS \
 OPS_IMPL(GRID_Vec2i) \
 OPS_IMPL(GRID_Vec2f) \
+OPS_FLOAT_IMPL(GRID_Vec2f) \
 VEC_FUNCS_IMPL(GRID_Vec2f) \
 OPS_IMPL(GRID_Vec3i) \
 OPS_IMPL(GRID_Vec3f) \
+OPS_FLOAT_IMPL(GRID_Vec3f) \
 VEC_FUNCS_IMPL(GRID_Vec3f) \
 FUNC2(GRID_Vec3f, cross, GRID_Vec3f) \
 OPS_IMPL(GRID_Vec4i) \
 OPS_IMPL(GRID_Vec4f) \
+OPS_FLOAT_IMPL(GRID_Vec4f) \
 VEC_FUNCS_IMPL(GRID_Vec4f)
 
 #define MATS \
-OPS_IMPL(GRID_Mat2)
-MATRIX_FUNCS_IMPL(GRID_Mat2)
-OPS_IMPL(GRID_Mat3)
-MATRIX_FUNCS_IMPL(GRID_Mat3)
-OPS_IMPL(GRID_Mat4)
+OPS_IMPL(GRID_Mat2) \
+OPS_FLOAT_IMPL(GRID_Mat2) \
+MATRIX_FUNCS_IMPL(GRID_Mat2) \
+OPS_IMPL(GRID_Mat3) \
+OPS_FLOAT_IMPL(GRID_Mat3) \
+MATRIX_FUNCS_IMPL(GRID_Mat3) \
+OPS_IMPL(GRID_Mat4) \
+OPS_FLOAT_IMPL(GRID_Mat4) \
 MATRIX_FUNCS_IMPL(GRID_Mat4)
 
 VECS

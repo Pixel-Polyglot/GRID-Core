@@ -18,7 +18,7 @@ UI::~UI() {
 }
 
 void UI::destroy() {
-    for (GRID_Widget* widget : widgets) {
+    for (GRID_Widget* widget : m_widgets) {
         delete widget;
     }
 
@@ -43,7 +43,7 @@ void UI::init(GLFWwindow* window, int ogl_version_major, int ogl_version_minor) 
 }
 
 void UI::addWidget(GRID_Widget* widget) {
-    widgets.push_back(widget);
+    m_widgets.push_back(widget);
 }
 
 void preRender() {
@@ -77,7 +77,7 @@ void renderDockingSpace() {
 void UI::render() {
     preRender();
     renderDockingSpace();
-    for (GRID_Widget* widget : widgets) {
+    for (GRID_Widget* widget : m_widgets) {
         widget->render();
     }
     postRender();

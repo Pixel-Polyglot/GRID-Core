@@ -15,7 +15,7 @@ void Window::destroy() {
     glfwTerminate();
 }
 
-void Window::init(std::string name, int width, int height, int ogl_version_major, int ogl_version_minor) {
+void Window::init(const char* name, glm::ivec2 size, int ogl_version_major, int ogl_version_minor) {
     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, ogl_version_major);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, ogl_version_minor);
@@ -36,7 +36,7 @@ void Window::init(std::string name, int width, int height, int ogl_version_major
         std::cout << glfwGetMonitorName(monitors[i]) << std::endl;
     }
 
-    window = glfwCreateWindow(width, height, name.c_str(), NULL, NULL);
+    window = glfwCreateWindow(size.x, size.y, name, NULL, NULL);
     // window = glfwCreateWindow(2560, 1440, name.c_str(), monitors[1], NULL);
     if (!window) {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -63,10 +63,10 @@ void Window::enableVsync(bool enable) {
 
 void Window::setDeltaTime() {
     double currentTime = glfwGetTime();
-    deltaTime = currentTime - lastTime;
-    lastTime = currentTime;
+    m_deltaTime = currentTime - m_lastTime;
+    m_lastTime = currentTime;
 }
 
 double Window::getDeltaTime() {
-    return deltaTime;
+    return m_deltaTime;
 }

@@ -1,6 +1,4 @@
 #pragma once
-// #include <glad/glad.h>
-#include <string>
 #include <unordered_map>
 #include <glm/glm.hpp>
 #include <textureManager.h>
@@ -13,28 +11,28 @@ public:
     void use();
     virtual void compile() = 0;
 
-    void setUniform(std::string shaderName, bool value);
-    void setUniform(std::string shaderName, float value);
-    void setUniform(std::string shaderName, int value);
-    void setUniform(std::string shaderName, glm::vec2 value);
-    void setUniform(std::string shaderName, glm::vec3 value);
-    void setUniform(std::string shaderName, glm::vec4 value);
-    void setUniform(std::string shaderName, glm::mat3 value);
-    void setUniform(std::string shaderName, glm::mat4 value);
+    void setUniform(const char* shaderName, bool value);
+    void setUniform(const char* shaderName, float value);
+    void setUniform(const char* shaderName, int value);
+    void setUniform(const char* shaderName, glm::vec2 value);
+    void setUniform(const char* shaderName, glm::vec3 value);
+    void setUniform(const char* shaderName, glm::vec4 value);
+    void setUniform(const char* shaderName, glm::mat3 value);
+    void setUniform(const char* shaderName, glm::mat4 value);
 
-    void createSsbo(std::string name, int size);
-    void bindSsbo(std::string shaderName, std::string value);
-    void setSsboValue(std::string name, int offset, int size, void* data);
-    void getSsboValue(std::string name, int offset, int size, void* data);
+    void createSsbo(const char* name, int size);
+    void bindSsbo(const char* shaderName, const char* value);
+    void setSsboValue(const char* name, int offset, int size, void* data);
+    void getSsboValue(const char* name, int offset, int size, void* data);
 
 
 protected:
     GLuint programID;
-    std::unordered_map<std::string, GLuint> uniformLocations;
-    std::unordered_map<std::string, GLuint> ssboList;
-    std::unordered_map<std::string, GLuint> ssboLocations;
-    GLuint getUniformLocation(std::string shaderName);
-    GLuint getSsboLocation(std::string shaderName);
+    std::unordered_map<const char*, GLuint> uniformLocations;
+    std::unordered_map<const char*, GLuint> ssboList;
+    std::unordered_map<const char*, GLuint> ssboLocations;
+    GLuint getUniformLocation(const char* shaderName);
+    GLuint getSsboLocation(const char* shaderName);
     GLint textureIndex = 0;
     GLuint bindingIndex = 0;
 };
@@ -43,14 +41,16 @@ class RenderProgram : public ShaderProgram {
 public:
     void compile();
 
-    void setVertexShader(std::string source);
-    void setFragmentShader(std::string source);
+    void setVertexShader(const char* name, const char* shaderCode);
+    void setVertexShaderFile(const char* source);
+    void setFragmentShader(const char* name, const char* shaderCode);
+    void setFragmentShaderFile(const char* source);
 
-    void setTexture(std::string texture, std::string value);
+    void setTexture(const char* texture, const char* value);
 
 private:
-    GLuint vertexShader = 0;
-    GLuint fragmentShader = 0;
+    GLuint m_vertexShader = 0;
+    GLuint m_fragmentShader = 0;
 };
 
 class ComputeProgram : public ShaderProgram {
@@ -58,9 +58,10 @@ public:
     void compile();
 
     void compute(unsigned int numGroupsX = 32, unsigned int numGroupsY = 32, unsigned int numGroupsZ = 1);
-    void setComputeShader(std::string source);
-    void setImage(std::string texture, std::string value, GRID_TEXTUREFORMAT format);
+    void setComputeShader(const char* name, const char* shaderCode);
+    void setComputeShaderFile(const char* source);
+    void setImage(const char* texture, const char* value, GRID_TEXTUREFORMAT format);
 
 private:
-    GLuint computeShader = 0;
+    GLuint m_computeShader = 0;
 };

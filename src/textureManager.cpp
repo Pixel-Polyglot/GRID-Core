@@ -1,6 +1,7 @@
 #include <textureManager.h>
 #include <iostream>
 #include <tinytiffwriter.h>
+#include "glm_convert.h"
 
 TextureManager textureManager = TextureManager();
 
@@ -10,13 +11,13 @@ TextureManager::TextureManager() {
 TextureManager::~TextureManager() {
 }
 
-GLuint TextureManager::writeTexture(std::string name, int width, int height, GRID_TEXTUREFORMAT format, int* data) {
-    if (textures.find(name) == textures.end()) {
+GLuint TextureManager::writeTexture(const char* name, glm::ivec2 resolution, GRID_TEXTUREFORMAT format, int* data) {
+    if (m_textures.find(name) == m_textures.end()) {
         std::cout << "Texture with name: " << name << " doesn't exists" << std::endl;
         return 0;
     }
 
-	glBindTexture(GL_TEXTURE_2D, textures[name]);
+	glBindTexture(GL_TEXTURE_2D, m_textures[name]);
 
     int layout;
     int pixelType;
@@ -82,23 +83,23 @@ GLuint TextureManager::writeTexture(std::string name, int width, int height, GRI
             return 0;
     }
 
-    glTexImage2D(GL_TEXTURE_2D, 0, layout, width, height, 0, pixelType, elementType, data);
+    glTexImage2D(GL_TEXTURE_2D, 0, layout, resolution.x, resolution.y, 0, pixelType, elementType, data);
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    return textures[name];
+    return m_textures[name];
 }
 
-void TextureManager::setTexture(std::string name, GLuint texture) {
-    if (textures.find(name) != textures.end()) {
+void TextureManager::setTexture(const char* name, GLuint texture) {
+    if (m_textures.find(name) != m_textures.end()) {
         std::cout << "Texture with name: " << name << " already exists" << std::endl;
         return;
     }
 
-    textures[name] = texture;
+    m_textures[name] = texture;
 }
 
-GLuint TextureManager::createTexture(std::string name, int width, int height, GRID_TEXTUREFORMAT format, int* data) {
-    if (textures.find(name) != textures.end()) {
+GLuint TextureManager::createTexture(const char* name, glm::ivec2 resolution, GRID_TEXTUREFORMAT format, int* data) {
+    if (m_textures.find(name) != m_textures.end()) {
         std::cout << "Texture with name: " << name << " already exists" << std::endl;
         return 0;
     }
@@ -109,21 +110,21 @@ GLuint TextureManager::createTexture(std::string name, int width, int height, GR
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-    textures[name] = texture;
+    m_textures[name] = texture;
 
-    return writeTexture(name, width, height, format, data);
+    return writeTexture(name, resolution, format, data);
 }
 
-GLuint TextureManager::getTexture(std::string name) {
-    if (textures.find(name) == textures.end()) {
+GLuint TextureManager::getTexture(const char* name) {
+    if (m_textures.find(name) == m_textures.end()) {
         std::cout << "Texture with name: " << name << " does not exist" << std::endl;
         return 0;
     }
-    return textures[name];
+    return m_textures[name];
 }
 
-GLuint TextureManager::loadFromTiff(GRID_Tiff &tiff, std::string name) {
-    if (textures.find(name) != textures.end()) {
+GLuint TextureManager::loadFromTiff(GRID_Tiff &tiff, const char* name) {
+    if (m_textures.find(name) != m_textures.end()) {
         std::cout << "Texture with name: " << name << " already exists" << std::endl;
         return 0;
     }
@@ -135,11 +136,12 @@ GLuint TextureManager::loadFromTiff(GRID_Tiff &tiff, std::string name) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     if (tiff.getSampleFormat() == GRID_TIFFFORMAT::TIFF_UINT) {
         if (tiff.getBitsPerSample() == 16) {
+            glm::ivec2 tiffResolution = toGLM(tiff.getResolution());
             if (tiff.getSamplesPerPixel() == 3) {
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16UI, tiff.getWidth(), tiff.getHeight(), 0, GL_RGB_INTEGER, GL_UNSIGNED_SHORT, tiff.getImage());
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16UI, tiffResolution.x, tiffResolution.y, 0, GL_RGB_INTEGER, GL_UNSIGNED_SHORT, tiff.getImage());
             }
             else if (tiff.getSamplesPerPixel() == 1) {
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_R16UI, tiff.getWidth(), tiff.getHeight(), 0, GL_RED_INTEGER, GL_UNSIGNED_SHORT, tiff.getImage());
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_R16UI, tiffResolution.x, tiffResolution.y, 0, GL_RED_INTEGER, GL_UNSIGNED_SHORT, tiff.getImage());
             }
             else {        
                 std::cout << "Tiff is neither 3 or 1 channel" << std::endl;
@@ -154,20 +156,12 @@ GLuint TextureManager::loadFromTiff(GRID_Tiff &tiff, std::string name) {
     }
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    textures[name] = texture;
+    m_textures[name] = texture;
 
     return texture;
 }
 
-void TextureManager::saveTextureToFile(std::string textureName, std::string fileName, int width, int height, GRID_TEXTUREFORMAT format, int sizeX, int sizeY, int offsetX, int offsetY) {
-    if (sizeX == 0) {
-        sizeX = width;
-    }
-
-    if (sizeY == 0) {
-        sizeY = height;
-    }
-    
+void TextureManager::saveTextureToFile(const char* textureName, const char* fileName, glm::ivec2 textureResolution, GRID_TEXTUREFORMAT format) {    
     int pixelType;
     int elementType;
     
@@ -186,7 +180,7 @@ void TextureManager::saveTextureToFile(std::string textureName, std::string file
             sampleFormat = TinyTIFFWriter_Float;
             sampleInterpretation = TinyTIFFWriter_Greyscale;
             channels = 1;
-            pixels = malloc(sizeof(uint8_t)*width*height);
+            pixels = malloc(sizeof(uint8_t)*textureResolution.x*textureResolution.y);
             break;
         case GRID_TEXTUREFORMAT::R8UI:
             pixelType = GL_RED_INTEGER;
@@ -195,7 +189,7 @@ void TextureManager::saveTextureToFile(std::string textureName, std::string file
             sampleFormat = TinyTIFFWriter_UInt;
             sampleInterpretation = TinyTIFFWriter_Greyscale;
             channels = 1;
-            pixels = malloc(sizeof(uint8_t)*width*height);
+            pixels = malloc(sizeof(uint8_t)*textureResolution.x*textureResolution.y);
             break;
         case GRID_TEXTUREFORMAT::RGBA8:
             pixelType = GL_RGBA;
@@ -204,7 +198,7 @@ void TextureManager::saveTextureToFile(std::string textureName, std::string file
             sampleFormat = TinyTIFFWriter_Float;
             sampleInterpretation = TinyTIFFWriter_RGB;
             channels = 4;
-            pixels = malloc(sizeof(uint8_t)*width*height*4);
+            pixels = malloc(sizeof(uint8_t)*textureResolution.x*textureResolution.y*4);
             break;
         case GRID_TEXTUREFORMAT::RGBA8UI:
             pixelType = GL_RGBA_INTEGER;
@@ -213,7 +207,7 @@ void TextureManager::saveTextureToFile(std::string textureName, std::string file
             sampleFormat = TinyTIFFWriter_UInt;
             sampleInterpretation = TinyTIFFWriter_RGB;
             channels = 4;
-            pixels = malloc(sizeof(uint8_t)*width*height*4);
+            pixels = malloc(sizeof(uint8_t)*textureResolution.x*textureResolution.y*4);
             break;
         case GRID_TEXTUREFORMAT::RGBA16F:
             pixelType = GL_RGBA;
@@ -222,7 +216,7 @@ void TextureManager::saveTextureToFile(std::string textureName, std::string file
             sampleFormat = TinyTIFFWriter_Float;
             sampleInterpretation = TinyTIFFWriter_RGB;
             channels = 4;
-            pixels = malloc(sizeof(uint16_t)*width*height*4);
+            pixels = malloc(sizeof(uint16_t)*textureResolution.x*textureResolution.y*4);
             break;
         case GRID_TEXTUREFORMAT::RGBA16UI:
             pixelType = GL_RGBA_INTEGER;
@@ -231,7 +225,7 @@ void TextureManager::saveTextureToFile(std::string textureName, std::string file
             sampleFormat = TinyTIFFWriter_UInt;
             sampleInterpretation = TinyTIFFWriter_RGB;
             channels = 4;
-            pixels = malloc(sizeof(uint16_t)*width*height*4);
+            pixels = malloc(sizeof(uint16_t)*textureResolution.x*textureResolution.y*4);
             break;
         case GRID_TEXTUREFORMAT::R16F:
             pixelType = GL_RED;
@@ -240,7 +234,7 @@ void TextureManager::saveTextureToFile(std::string textureName, std::string file
             sampleFormat = TinyTIFFWriter_Float;
             sampleInterpretation = TinyTIFFWriter_Greyscale;
             channels = 1;
-            pixels = malloc(sizeof(uint16_t)*width*height);
+            pixels = malloc(sizeof(uint16_t)*textureResolution.x*textureResolution.y);
             break;
         case GRID_TEXTUREFORMAT::R16UI:
             pixelType = GL_RED_INTEGER;
@@ -249,7 +243,7 @@ void TextureManager::saveTextureToFile(std::string textureName, std::string file
             sampleFormat = TinyTIFFWriter_UInt;
             sampleInterpretation = TinyTIFFWriter_Greyscale;
             channels = 1;
-            pixels = malloc(sizeof(uint16_t)*width*height);
+            pixels = malloc(sizeof(uint16_t)*textureResolution.x*textureResolution.y);
             break;
         case GRID_TEXTUREFORMAT::RGBA32F:
             pixelType = GL_RGBA;
@@ -258,7 +252,7 @@ void TextureManager::saveTextureToFile(std::string textureName, std::string file
             sampleFormat = TinyTIFFWriter_Float;
             sampleInterpretation = TinyTIFFWriter_RGB;
             channels = 4;
-            pixels = malloc(sizeof(uint32_t)*width*height*4);
+            pixels = malloc(sizeof(uint32_t)*textureResolution.x*textureResolution.y*4);
             break;
         case GRID_TEXTUREFORMAT::R32UI:
             pixelType = GL_RED_INTEGER;
@@ -267,7 +261,7 @@ void TextureManager::saveTextureToFile(std::string textureName, std::string file
             sampleFormat = TinyTIFFWriter_UInt;
             sampleInterpretation = TinyTIFFWriter_RGB;
             channels = 1;
-            pixels = malloc(sizeof(uint32_t)*width*height);
+            pixels = malloc(sizeof(uint32_t)*textureResolution.x*textureResolution.y);
             break;
         case GRID_TEXTUREFORMAT::RGBA32UI:
             pixelType = GL_RGBA_INTEGER;
@@ -276,7 +270,7 @@ void TextureManager::saveTextureToFile(std::string textureName, std::string file
             sampleFormat = TinyTIFFWriter_UInt;
             sampleInterpretation = TinyTIFFWriter_RGB;
             channels = 4;
-            pixels = malloc(sizeof(uint32_t)*width*height*4);
+            pixels = malloc(sizeof(uint32_t)*textureResolution.x*textureResolution.y*4);
             break;
         default:
             std::cout << "Invalid texture format" << std::endl;
@@ -291,7 +285,7 @@ void TextureManager::saveTextureToFile(std::string textureName, std::string file
 	glBindTexture(GL_TEXTURE_2D, getTexture(textureName));
     glGetTexImage(GL_TEXTURE_2D, 0, pixelType, elementType, pixels);
 
-    TinyTIFFWriterFile* tif=TinyTIFFWriter_open(fileName.c_str(), bits, sampleFormat, channels, sizeX + offsetX, sizeY + offsetY, sampleInterpretation);
+    TinyTIFFWriterFile* tif=TinyTIFFWriter_open(fileName, bits, sampleFormat, channels, textureResolution.x, textureResolution.y, sampleInterpretation);
     if (tif) {
         TinyTIFFWriter_writeImage(tif, pixels);
         TinyTIFFWriter_close(tif);

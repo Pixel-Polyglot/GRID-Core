@@ -6,8 +6,6 @@
 #include <tiffLoader.h>
 #include <glm_convert.h>
 
-Renderer renderer = Renderer();
-
 Quad::Quad() {
 }
 
@@ -19,21 +17,20 @@ void Quad::destroy() {
     glDeleteBuffers(1, &vbo);
 }
 
-void Quad::setScale(float x, float y) {
-    scale = glm::vec2(x, y);
+void Quad::setScale(glm::vec2 scale) {
+    m_scale = scale;
 }
 
-void Quad::getScale(float &x, float &y) {
-    x = scale.x;
-    y = scale.y;
+glm::vec2 Quad::getScale() {
+    return m_scale;
 }
 
 glm::mat4 Quad::getModelMatrix() {
-    return glm::scale(glm::mat4(1.0f), glm::vec3(scale.x, scale.y, 1.0f));
+    return glm::scale(glm::mat4(1.0f), glm::vec3(m_scale, 1.0f));
 }
 
 std::vector<float> Quad::getVertices() {
-    return vertices;
+    return m_vertices;
 }
 
 Renderer::Renderer() {
@@ -43,107 +40,109 @@ Renderer::~Renderer() {
 }
 
 void Renderer::destroy() {
-    glDeleteFramebuffers(1, &fbo);
-    glDeleteRenderbuffers(1, &rbo);
+    glDeleteFramebuffers(1, &m_fbo);
+    glDeleteRenderbuffers(1, &m_rbo);
     // glDeleteTextures(1, &renderTexture);
-    quad->destroy();
-    delete camera;
-    delete quad;
+    m_quad->destroy();
+    delete m_camera;
+    delete m_quad;
 }
 
 void Renderer::createRenderTexture() {
-    glGenTextures(1, &imguiTexture);
-	glBindTexture(GL_TEXTURE_2D, imguiTexture);
+    glGenTextures(1, &m_imguiTexture);
+	glBindTexture(GL_TEXTURE_2D, m_imguiTexture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    textureManager.createTexture("renderTexture", 0, 0, GRID_TEXTUREFORMAT::RGBA32F, 0);
+    textureManager.createTexture(m_guiTextureName, glm::ivec2(0, 0), GRID_TEXTUREFORMAT::RGBA32F, 0);
 }
 
 void Renderer::loadShaders() {
-    program.setVertexShader("../shaders/vertexShader.vs");
-    program.setFragmentShader("../shaders/fragmentShader.fs");
+    m_program.setVertexShader("rendererVertex", vertexSource);
+    m_program.setFragmentShader("rendererFragment", fragmentSource);
 
-    program.compile();
+    m_program.compile();
 }
 
 void Renderer::createBuffers() {
-    glGenFramebuffers(1, &fbo);
-    glGenBuffers(1, &quad->vbo);
-	glGenVertexArrays(1, &quad->vao);
-    glGenRenderbuffers(1, &rbo);
+    glGenFramebuffers(1, &m_fbo);
+    glGenBuffers(1, &m_quad->vbo);
+	glGenVertexArrays(1, &m_quad->vao);
+    glGenRenderbuffers(1, &m_rbo);
 }
 
 void Renderer::setQuadBufferData() {
-    glBindVertexArray(quad->vao);
-    glBindBuffer(GL_ARRAY_BUFFER, quad->vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * quad->getVertices().size(), &quad->getVertices()[0], GL_STATIC_DRAW);
+    glBindVertexArray(m_quad->vao);
+    glBindBuffer(GL_ARRAY_BUFFER, m_quad->vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_quad->getVertices().size(), &m_quad->getVertices()[0], GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, NULL);
 	glEnableVertexAttribArray(0);
 }
 
-void Renderer::init() {
-    quad = new Quad();
+void Renderer::init(const char* textureName) {
+    m_guiTextureName = textureName;
+    m_quad = new Quad();
     createBuffers();
     setQuadBufferData();
     createRenderTexture();
     loadShaders();
-    camera = new GRID_Camera(1, 1);
+    m_camera = new GRID_Camera(GRID_Vec2i(1, 1));
 }
 
 GRID_Camera* Renderer::getCamera() {
-    return camera;
+    return m_camera;
 }
 
 void Renderer::render() {
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, imguiTexture, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_imguiTexture, 0);
 
 	glClearColor(0.1, 0.1, 0.1, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	program.use();
-    glm::mat4 mvp = toGLM(camera->getProjectionMatrix()) * toGLM(camera->getViewMatrix()) * quad->getModelMatrix();
-    program.setUniform("mvp", mvp);
-    program.setTexture("renderTexture", "renderTexture");
+	m_program.use();
+    glm::mat4 mvp = toGLM(m_camera->getProjectionMatrix()) * toGLM(m_camera->getViewMatrix()) * m_quad->getModelMatrix();
+    m_program.setUniform("mvp", mvp);
+    m_program.setTexture("renderTexture", m_guiTextureName);
     
-    glBindVertexArray(quad->vao);
-	glDrawArrays(GL_TRIANGLES, 0, quad->getVertices().size());
+    glBindVertexArray(m_quad->vao);
+	glDrawArrays(GL_TRIANGLES, 0, m_quad->getVertices().size());
     glUseProgram(0);
     glBindVertexArray(0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Renderer::resize(int prevWidth, int prevHeight, int width, int height) {
-    glBindTexture(GL_TEXTURE_2D, imguiTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_HALF_FLOAT, 0);
+void Renderer::resize(glm::ivec2 prevResolution, glm::ivec2 resolution) {
+    glBindTexture(GL_TEXTURE_2D, m_imguiTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, resolution.x, resolution.y, 0, GL_RGB, GL_HALF_FLOAT, 0);
     glBindTexture(GL_TEXTURE_2D, 0);
 
-	glViewport(0, 0, width, height);
-    camera->setResolution(width, height);
+	glViewport(0, 0, resolution.x, resolution.y);
+    m_camera->setResolution(fromGLM(resolution));
 
-    float verticalGain = float(height) / float(prevHeight);
+    float verticalGain = float(resolution.y) / float(prevResolution.y);
 
-    float zoomX, zoomY;
-    camera->getScale(zoomX, zoomY);
-    camera->setScale(zoomX * verticalGain, zoomY * verticalGain);
+    glm::vec2 zoom = toGLM(m_camera->getScale());
+    m_camera->setScale(fromGLM(zoom * verticalGain));
 }
 
-void Renderer::setResolution(unsigned int width, unsigned int height) {
-    quad->setScale((float)width / (float)height, 1.0f);
-    glBindTexture(GL_TEXTURE_2D, textureManager.getTexture("renderTexture"));
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, 0);
+void Renderer::setResolution(glm::ivec2 resolution) {
+    m_quad->setScale((glm::vec2((float)resolution.x / (float)resolution.y, 1.0f)));
+    glBindTexture(GL_TEXTURE_2D, textureManager.getTexture(m_guiTextureName));
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, resolution.x, resolution.y, 0, GL_RGBA, GL_FLOAT, 0);
     glBindTexture(GL_TEXTURE_2D, 0);
-    resx = width;
-    resy = height;
+    m_resolution = resolution;
 }
 
-void Renderer::getResolution(unsigned int &x, unsigned int &y) {
-    x = resx;
-    y = resy;
+glm::ivec2 Renderer::getResolution() {
+    return m_resolution;
 }
 
 GLuint Renderer::getImguiTexture() {
-    return imguiTexture;
+    return m_imguiTexture;
+}
+
+const char* Renderer::getTextureName() {
+    return m_guiTextureName;
 }

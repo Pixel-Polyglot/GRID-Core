@@ -1,4 +1,5 @@
 #include "shaderManager.h"
+#include <cstring>
 
 ShaderManager shaderManager = ShaderManager();
 
@@ -23,9 +24,43 @@ bool checkShader(GLuint shader) {
 	return true;
 }
 
-GLuint ShaderManager::loadShader(std::string filePath) {
-	if (shaders.find(filePath) != shaders.end()) {
-		return shaders[filePath];
+GLuint ShaderManager::loadShader(const char* shaderType, const char* name, const char* shaderCode) {
+	if (m_shaders.find(name) != m_shaders.end()) {
+		return m_shaders[name];
+	}
+
+	GLuint shader;
+
+	if (strcmp(shaderType, "vs") == 0) {
+		shader = glCreateShader(GL_VERTEX_SHADER);
+	}
+	else if (strcmp(shaderType, "fs") == 0) {
+		shader = glCreateShader(GL_FRAGMENT_SHADER);
+	}
+	else if (strcmp(shaderType, "cs") == 0) {
+		shader = glCreateShader(GL_COMPUTE_SHADER);
+	}
+	else {
+		std::cout << "invalid shaderType: " << shaderType << std::endl;
+		return 0;
+	}
+
+	std::cout << "Compiling shader: " << name << std::endl;
+	char const * sourcePointer = shaderCode;
+	glShaderSource(shader, 1, &sourcePointer, NULL);
+	glCompileShader(shader);
+
+	if (!checkShader(shader)){
+		return 0;
+	}
+
+	m_shaders[name] = shader;
+	return shader;
+}
+
+GLuint ShaderManager::loadShaderFile(const char* filePath) {
+	if (m_shaders.find(filePath) != m_shaders.end()) {
+		return m_shaders[filePath];
 	}
 	std::string shaderCode;
 	std::ifstream shaderStream(filePath, std::ios::in);
@@ -36,22 +71,23 @@ GLuint ShaderManager::loadShader(std::string filePath) {
 		shaderStream.close();
 	}
 	else {
-		std::cout << "Unable to open %s\n" << filePath;
+		std::cout << "Unable to open: " << filePath << std::endl;
 		return 0;
 	}
 
 	GLuint shader;
 
-	int extIndex = filePath.find_last_of(".");
-	std::string shaderType = filePath.substr(extIndex + 1);
+	const char* dot = strrchr(filePath, '.');
+	const char* shaderType;
+	shaderType = dot + 1;
 
-	if (shaderType == "vs") {
+	if (strcmp(shaderType, "vs") == 0) {
 		shader = glCreateShader(GL_VERTEX_SHADER);
 	}
-	else if (shaderType == "fs") {
+	else if (strcmp(shaderType, "fs") == 0) {
 		shader = glCreateShader(GL_FRAGMENT_SHADER);
 	}
-	else if (shaderType == "cs") {
+	else if (strcmp(shaderType, "cs") == 0) {
 		shader = glCreateShader(GL_COMPUTE_SHADER);
 	}
 	else {
@@ -68,6 +104,6 @@ GLuint ShaderManager::loadShader(std::string filePath) {
 		return 0;
 	}
 
-	shaders[filePath] = shader;
+	m_shaders[filePath] = shader;
 	return shader;
 }

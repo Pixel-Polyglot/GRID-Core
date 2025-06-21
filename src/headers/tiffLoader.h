@@ -1,28 +1,25 @@
 #pragma once
-#include <string>
 #include <cstdint>
 #include <GRID/GRID_tiffFormat.h>
+#include <glm/glm.hpp>
 
 class Tiff {
 public:
-    Tiff(std::string filePath);
+    Tiff(const char* filePath);
     ~Tiff();
 
     uint8_t* getImage();
-    uint32_t getWidth();
-    uint32_t getHeight();
-    uint32_t getBitsPerSample();
-    uint32_t getSamplesPerPixel();
+    glm::ivec2 getResolution();
+    unsigned int getBitsPerSample();
+    unsigned int getSamplesPerPixel();
     GRID_TIFFFORMAT getSampleFormat();
 
 private:
-    void load(std::string filePath);
+    void load(const char* filePath);
 
-    std::string filePath;
-    uint8_t* image;
-    uint32_t width;
-    uint32_t height;
-    uint32_t bitsPerSample;
-    uint32_t samplesPerPixel;
-    GRID_TIFFFORMAT sampleFormat;
+    uint8_t* m_image;
+    glm::ivec2 m_resolution;
+    unsigned int m_bitsPerSample;
+    unsigned int m_samplesPerPixel;
+    GRID_TIFFFORMAT m_sampleFormat;
 };

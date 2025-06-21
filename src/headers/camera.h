@@ -10,9 +10,9 @@ public:
     void translate(glm::vec2 offset);
     void setScale(glm::vec2 scale);
 
-    void getResolution(glm::ivec2 &resolution);
-    void getPosition(glm::vec2 &position);
-    void getScale(glm::vec2 &scale);
+    glm::ivec2 getResolution();
+    glm::vec2 getPosition();
+    glm::vec2 getScale();
 
     glm::mat4 getProjectionMatrix();
     glm::mat4 getViewMatrix();
@@ -21,10 +21,10 @@ private:
     void updateProjectionMatrix();
     void updateViewMatrix();
 
-    glm::mat4 projection;
-    glm::mat4 view;
+    glm::mat4 m_projection;
+    glm::mat4 m_view;
 
-    glm::ivec2 m_res;
+    glm::ivec2 m_resolution;
     glm::vec2 m_position;
     glm::vec2 m_scale;
 };

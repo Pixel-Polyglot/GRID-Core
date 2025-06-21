@@ -24,5 +24,5 @@ public:
     static GRID_Vec2f getContentRegionAvail();
 
 private:
-    static inline int styles;
+    static inline int m_styles;
 };

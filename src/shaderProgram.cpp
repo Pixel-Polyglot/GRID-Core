@@ -1,7 +1,7 @@
 #include <shaderProgram.h>
 #include <shaderManager.h>
 
-void ShaderProgram::createSsbo(std::string name, int size) {
+void ShaderProgram::createSsbo(const char* name, int size) {
     GLuint ssbo;
     glGenBuffers(1, &ssbo);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
@@ -10,19 +10,19 @@ void ShaderProgram::createSsbo(std::string name, int size) {
     ssboList[name] = ssbo;
 }
 
-void ShaderProgram::bindSsbo(std::string shaderName, std::string value) {
+void ShaderProgram::bindSsbo(const char* shaderName, const char* value) {
     GLuint location = getSsboLocation(shaderName);
     glShaderStorageBlockBinding(programID, location, bindingIndex);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, bindingIndex, ssboList[value]);
     bindingIndex += 1;
 }
 
-void ShaderProgram::setSsboValue(std::string name, int offset, int size, void* data) {
+void ShaderProgram::setSsboValue(const char* name, int offset, int size, void* data) {
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssboList[name]);
     glBufferSubData(GL_SHADER_STORAGE_BUFFER, offset, size, data);
 }
 
-void ShaderProgram::getSsboValue(std::string name, int offset, int size, void* data) {
+void ShaderProgram::getSsboValue(const char* name, int offset, int size, void* data) {
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssboList[name]);
     glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, offset, size, data);
 }
@@ -39,11 +39,11 @@ void RenderProgram::compile() {
 
 	GLuint program = glCreateProgram();
 
-    if (vertexShader != 0) {
-        glAttachShader(program, vertexShader);
+    if (m_vertexShader != 0) {
+        glAttachShader(program, m_vertexShader);
     }
-    if (fragmentShader != 0) {
-        glAttachShader(program, fragmentShader);
+    if (m_fragmentShader != 0) {
+        glAttachShader(program, m_fragmentShader);
     }
 
 	glLinkProgram(program);
@@ -55,11 +55,11 @@ void RenderProgram::compile() {
 		std::cout << "\n" << &programErrorMessage[0];
 	}
 
-    if (vertexShader != 0) {
-        glDetachShader(program, vertexShader);
+    if (m_vertexShader != 0) {
+        glDetachShader(program, m_vertexShader);
     }
-    if (fragmentShader != 0) {
-        glDetachShader(program, fragmentShader);
+    if (m_fragmentShader != 0) {
+        glDetachShader(program, m_fragmentShader);
     }
 
 	programID = program;
@@ -71,8 +71,8 @@ void ComputeProgram::compile() {
 
 	GLuint program = glCreateProgram();
 
-    if (computeShader != 0) {
-        glAttachShader(program, computeShader);
+    if (m_computeShader != 0) {
+        glAttachShader(program, m_computeShader);
     }
 
 	glLinkProgram(program);
@@ -84,23 +84,35 @@ void ComputeProgram::compile() {
 		std::cout << "\n" << &programErrorMessage[0];
 	}
 
-    if (computeShader != 0) {
-        glDetachShader(program, computeShader);
+    if (m_computeShader != 0) {
+        glDetachShader(program, m_computeShader);
     }
 
 	programID = program;
 }
 
-void RenderProgram::setVertexShader(std::string path) {
-    vertexShader = shaderManager.loadShader(path);
+void RenderProgram::setVertexShader(const char* name, const char* shaderCode) {
+    m_vertexShader = shaderManager.loadShader("vs", name, shaderCode);
 }
 
-void RenderProgram::setFragmentShader(std::string path) {
-    fragmentShader = shaderManager.loadShader(path);
+void RenderProgram::setVertexShaderFile(const char* source) {
+    m_vertexShader = shaderManager.loadShaderFile(source);
 }
 
-void ComputeProgram::setComputeShader(std::string path) {
-    computeShader = shaderManager.loadShader(path);
+void RenderProgram::setFragmentShader(const char* name, const char* shaderCode) {
+    m_fragmentShader = shaderManager.loadShader("fs", name, shaderCode);
+}
+
+void RenderProgram::setFragmentShaderFile(const char* source) {
+    m_fragmentShader = shaderManager.loadShaderFile(source);
+}
+
+void ComputeProgram::setComputeShader(const char* name, const char* shaderCode) {
+    m_computeShader = shaderManager.loadShader("cs", name, shaderCode);
+}
+
+void ComputeProgram::setComputeShaderFile(const char* source) {
+    m_computeShader = shaderManager.loadShaderFile(source);
 }
 
 void ShaderProgram::use() {
@@ -109,14 +121,14 @@ void ShaderProgram::use() {
     bindingIndex = 0;
 }
 
-void RenderProgram::setTexture(std::string shaderName, std::string value) {
+void RenderProgram::setTexture(const char* shaderName, const char* value) {
     setUniform(shaderName, textureIndex);
     glActiveTexture(GL_TEXTURE0 + textureIndex);
     glBindTexture(GL_TEXTURE_2D, textureManager.getTexture(value));
     textureIndex += 1;
 }
 
-void ComputeProgram::setImage(std::string shaderName, std::string value, GRID_TEXTUREFORMAT format) {
+void ComputeProgram::setImage(const char* shaderName, const char* value, GRID_TEXTUREFORMAT format) {
     int imageType;
     switch (format) {
         case GRID_TEXTUREFORMAT::R8:
@@ -163,9 +175,9 @@ void ComputeProgram::setImage(std::string shaderName, std::string value, GRID_TE
     textureIndex += 1;
 }
 
-GLuint ShaderProgram::getUniformLocation(std::string shaderName) {
+GLuint ShaderProgram::getUniformLocation(const char* shaderName) {
     if (uniformLocations.find(shaderName) == uniformLocations.end()) {
-        GLuint location = glGetUniformLocation(programID, shaderName.c_str());
+        GLuint location = glGetUniformLocation(programID, shaderName);
         uniformLocations[shaderName] = location;
         return location;
     } else {
@@ -173,9 +185,9 @@ GLuint ShaderProgram::getUniformLocation(std::string shaderName) {
     }
 }
 
-GLuint ShaderProgram::getSsboLocation(std::string shaderName) {
+GLuint ShaderProgram::getSsboLocation(const char* shaderName) {
     if (ssboLocations.find(shaderName) == ssboLocations.end()) {
-        GLuint location = glGetProgramResourceIndex(programID, GL_SHADER_STORAGE_BLOCK, shaderName.c_str());
+        GLuint location = glGetProgramResourceIndex(programID, GL_SHADER_STORAGE_BLOCK, shaderName);
         ssboLocations[shaderName] = location;
         return location;
     } else {
@@ -183,34 +195,34 @@ GLuint ShaderProgram::getSsboLocation(std::string shaderName) {
     }
 }
 
-void ShaderProgram::setUniform(std::string shaderName, bool value) {
+void ShaderProgram::setUniform(const char* shaderName, bool value) {
     glUniform1i(getUniformLocation(shaderName), (GLint)value);
 }
 
-void ShaderProgram::setUniform(std::string shaderName, float value) {
+void ShaderProgram::setUniform(const char* shaderName, float value) {
     glUniform1fv(getUniformLocation(shaderName), 1, &value);
 }
 
-void ShaderProgram::setUniform(std::string shaderName, int value) {
+void ShaderProgram::setUniform(const char* shaderName, int value) {
     glUniform1iv(getUniformLocation(shaderName), 1, &value);
 }
 
-void ShaderProgram::setUniform(std::string shaderName, glm::vec2 value) {
+void ShaderProgram::setUniform(const char* shaderName, glm::vec2 value) {
     glUniform2fv(getUniformLocation(shaderName), 1, &value[0]);
 }
 
-void ShaderProgram::setUniform(std::string shaderName, glm::vec3 value) {
+void ShaderProgram::setUniform(const char* shaderName, glm::vec3 value) {
     glUniform3fv(getUniformLocation(shaderName), 1, &value[0]);
 }
 
-void ShaderProgram::setUniform(std::string shaderName, glm::vec4 value) {
+void ShaderProgram::setUniform(const char* shaderName, glm::vec4 value) {
     glUniform4fv(getUniformLocation(shaderName), 1, &value[0]);
 }
 
-void ShaderProgram::setUniform(std::string shaderName, glm::mat3 value) {
+void ShaderProgram::setUniform(const char* shaderName, glm::mat3 value) {
     glUniformMatrix3fv(getUniformLocation(shaderName), 1, GL_FALSE, &value[0][0]);
 }
 
-void ShaderProgram::setUniform(std::string shaderName, glm::mat4 value) {
+void ShaderProgram::setUniform(const char* shaderName, glm::mat4 value) {
     glUniformMatrix4fv(getUniformLocation(shaderName), 1, GL_FALSE, &value[0][0]);
 }
