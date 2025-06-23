@@ -13,7 +13,7 @@ using AppFunc = void (*)();
 using AppFuncInit = void (*)(int atgc, char *argv[]);
 using AppFuncVersion = int (*)();
 
-extern "C" void start(const char *jsonPath, int argc, char *argv[]) {
+extern "C" void start(std::string jsonPath, int argc, char *argv[]) {
   std::cout << "GRID Core v" << getVersionMajor() << "." << getVersionMinor() << std::endl;
 
   settings.loadSettings(jsonPath);

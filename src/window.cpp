@@ -15,7 +15,7 @@ void Window::destroy() {
     glfwTerminate();
 }
 
-void Window::init(const char* name, glm::ivec2 size, int ogl_version_major, int ogl_version_minor) {
+void Window::init(std::string name, glm::ivec2 size, int ogl_version_major, int ogl_version_minor) {
     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, ogl_version_major);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, ogl_version_minor);
@@ -36,8 +36,7 @@ void Window::init(const char* name, glm::ivec2 size, int ogl_version_major, int 
         std::cout << glfwGetMonitorName(monitors[i]) << std::endl;
     }
 
-    window = glfwCreateWindow(size.x, size.y, name, NULL, NULL);
-    // window = glfwCreateWindow(2560, 1440, name.c_str(), monitors[1], NULL);
+    window = glfwCreateWindow(size.x, size.y, name.c_str(), NULL, NULL);
     if (!window) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();

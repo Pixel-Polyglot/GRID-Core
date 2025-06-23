@@ -35,14 +35,14 @@ public:
     Renderer();
     ~Renderer();
     void destroy();
-    void init(const char* textureName);
+    void init(std::string textureName);
     void resize(glm::ivec2 prevResolution, glm::ivec2 resolution);
     void render();
 
     void setResolution(glm::ivec2 resolution);
     glm::ivec2 getResolution();
 
-    const char* getTextureName();
+    std::string getTextureName();
 
     GRID_Camera* getCamera();
 
@@ -62,11 +62,11 @@ private:
     GLuint m_fbo;
     GLuint m_rbo;
     GLuint m_imguiTexture;
-    const char* m_guiTextureName;
+    std::string m_guiTextureName;
 
     glm::ivec2 m_resolution;
 
-const char* vertexSource = R"VERTEX(#version 450 core
+    std::string vertexSource = R"VERTEX(#version 450 core
 uniform mat4 mvp;
 in vec3 vert;
 out vec3 pos;
@@ -77,7 +77,7 @@ void main() {
 }
 )VERTEX";
 
-    const char* fragmentSource = R"FRAGMENT(#version 450 core
+    std::string fragmentSource = R"FRAGMENT(#version 450 core
 uniform sampler2D renderTexture;
 in vec3 pos;
 out vec4 color;

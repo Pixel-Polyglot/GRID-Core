@@ -10,17 +10,17 @@ public:
     Settings();
     ~Settings();
 
-    void loadSettings(const char* filePath);
+    void loadSettings(std::string filePath);
 
-    bool getUserSettingAsBool(const char* key);
-    int getUserSettingAsInt(const char* key);
-    double getUserSettingAsDouble(const char* key);
-    std::string getUserSettingAsString(const char* key);
+    bool getUserSettingAsBool(std::string key);
+    int getUserSettingAsInt(std::string key);
+    double getUserSettingAsDouble(std::string key);
+    std::string getUserSettingAsString(std::string key);
 
     std::string getRelativePath();
 
     template<typename T>
-    T getSetting(const char* key) {
+    T getSetting(std::string key) {
         if (!m_data.contains(key)) {
             std::cout << "Setting: " << key << " does not exist" << std::endl;
             return T{};
@@ -30,7 +30,7 @@ public:
 
 private:
     template<typename T>
-    T getUserSetting(const char* key) {
+    T getUserSetting(std::string key) {
         if (m_userSettings.is_null()) {
             std::cout << "No user settings loaded" << std::endl;
             return T{};

@@ -9,10 +9,10 @@ class ShaderManager {
 public:
 	ShaderManager();
 	~ShaderManager();
-	GLuint loadShader(const char* shaderType, const char* name, const char* shaderCode);
-	GLuint loadShaderFile(const char* filePath);
+	GLuint loadShader(std::string shaderType, std::string name, std::string shaderCode);
+	GLuint loadShaderFile(std::string filePath);
 private:
-	std::unordered_map<const char*, GLuint> m_shaders;
+	std::unordered_map<std::string, GLuint> m_shaders;
 };
 
 extern ShaderManager shaderManager;

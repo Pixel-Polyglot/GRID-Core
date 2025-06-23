@@ -11,9 +11,9 @@ TextureManager::TextureManager() {
 TextureManager::~TextureManager() {
 }
 
-GLuint TextureManager::writeTexture(const char* name, glm::ivec2 resolution, GRID_TEXTUREFORMAT format, int* data) {
+GLuint TextureManager::writeTexture(std::string name, glm::ivec2 resolution, GRID_TEXTUREFORMAT format, int* data) {
     if (m_textures.find(name) == m_textures.end()) {
-        std::cout << "Texture with name: " << name << " doesn't exists" << std::endl;
+        std::cout << "Texture with name: " << name << " doesn't exist" << std::endl;
         return 0;
     }
 
@@ -89,7 +89,7 @@ GLuint TextureManager::writeTexture(const char* name, glm::ivec2 resolution, GRI
     return m_textures[name];
 }
 
-void TextureManager::setTexture(const char* name, GLuint texture) {
+void TextureManager::setTexture(std::string name, GLuint texture) {
     if (m_textures.find(name) != m_textures.end()) {
         std::cout << "Texture with name: " << name << " already exists" << std::endl;
         return;
@@ -98,7 +98,7 @@ void TextureManager::setTexture(const char* name, GLuint texture) {
     m_textures[name] = texture;
 }
 
-GLuint TextureManager::createTexture(const char* name, glm::ivec2 resolution, GRID_TEXTUREFORMAT format, int* data) {
+GLuint TextureManager::createTexture(std::string name, glm::ivec2 resolution, GRID_TEXTUREFORMAT format, int* data) {
     if (m_textures.find(name) != m_textures.end()) {
         std::cout << "Texture with name: " << name << " already exists" << std::endl;
         return 0;
@@ -111,11 +111,10 @@ GLuint TextureManager::createTexture(const char* name, glm::ivec2 resolution, GR
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
     m_textures[name] = texture;
-
     return writeTexture(name, resolution, format, data);
 }
 
-GLuint TextureManager::getTexture(const char* name) {
+GLuint TextureManager::getTexture(std::string name) {
     if (m_textures.find(name) == m_textures.end()) {
         std::cout << "Texture with name: " << name << " does not exist" << std::endl;
         return 0;
@@ -123,7 +122,7 @@ GLuint TextureManager::getTexture(const char* name) {
     return m_textures[name];
 }
 
-GLuint TextureManager::loadFromTiff(GRID_Tiff &tiff, const char* name) {
+GLuint TextureManager::loadFromTiff(GRID_Tiff &tiff, std::string name) {
     if (m_textures.find(name) != m_textures.end()) {
         std::cout << "Texture with name: " << name << " already exists" << std::endl;
         return 0;
@@ -161,7 +160,7 @@ GLuint TextureManager::loadFromTiff(GRID_Tiff &tiff, const char* name) {
     return texture;
 }
 
-void TextureManager::saveTextureToFile(const char* textureName, const char* fileName, glm::ivec2 textureResolution, GRID_TEXTUREFORMAT format) {    
+void TextureManager::saveTextureToFile(std::string textureName, std::string fileName, glm::ivec2 textureResolution, GRID_TEXTUREFORMAT format) {    
     int pixelType;
     int elementType;
     
@@ -285,7 +284,7 @@ void TextureManager::saveTextureToFile(const char* textureName, const char* file
 	glBindTexture(GL_TEXTURE_2D, getTexture(textureName));
     glGetTexImage(GL_TEXTURE_2D, 0, pixelType, elementType, pixels);
 
-    TinyTIFFWriterFile* tif=TinyTIFFWriter_open(fileName, bits, sampleFormat, channels, textureResolution.x, textureResolution.y, sampleInterpretation);
+    TinyTIFFWriterFile* tif=TinyTIFFWriter_open(fileName.c_str(), bits, sampleFormat, channels, textureResolution.x, textureResolution.y, sampleInterpretation);
     if (tif) {
         TinyTIFFWriter_writeImage(tif, pixels);
         TinyTIFFWriter_close(tif);

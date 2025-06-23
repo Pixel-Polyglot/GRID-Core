@@ -2,10 +2,11 @@
 #include <cstdint>
 #include <GRID/GRID_tiffFormat.h>
 #include <glm/glm.hpp>
+#include <string>
 
 class Tiff {
 public:
-    Tiff(const char* filePath);
+    Tiff(std::string filePath);
     ~Tiff();
 
     uint8_t* getImage();
@@ -15,7 +16,7 @@ public:
     GRID_TIFFFORMAT getSampleFormat();
 
 private:
-    void load(const char* filePath);
+    void load(std::string filePath);
 
     uint8_t* m_image;
     glm::ivec2 m_resolution;

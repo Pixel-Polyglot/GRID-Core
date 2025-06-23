@@ -4,12 +4,13 @@
 #include <cstdint>
 #include "GRID_tiffFormat.h"
 #include "GRID_math.h"
+#include <string>
 
 class Tiff;
 
 class EXPORT GRID_Tiff {
 public:
-    GRID_Tiff(const char* filePath);
+    GRID_Tiff(std::string filePath);
     ~GRID_Tiff();
 
     uint8_t* getImage();

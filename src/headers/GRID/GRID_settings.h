@@ -5,10 +5,10 @@
 
 class EXPORT GRID_Settings {
 public:
-    static bool getUserSettingAsBool(const char* key);
-    static int getUserSettingAsInt(const char* key);
-    static double getUserSettingAsDouble(const char* key);
-    static std::string getUserSettingAsString(const char* key);
+    static bool getUserSettingAsBool(std::string key);
+    static int getUserSettingAsInt(std::string key);
+    static double getUserSettingAsDouble(std::string key);
+    static std::string getUserSettingAsString(std::string key);
 
     static std::string getRelativePath();
 };

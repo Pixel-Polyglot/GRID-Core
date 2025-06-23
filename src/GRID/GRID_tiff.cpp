@@ -2,7 +2,7 @@
 #include <tiffLoader.h>
 #include "glm_convert.h"
 
-GRID_Tiff::GRID_Tiff(const char* filePath) {
+GRID_Tiff::GRID_Tiff(std::string filePath) {
     m_tiff = new Tiff(filePath);
 }
 

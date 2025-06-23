@@ -23,6 +23,6 @@
 		#define EXPORT_FUNCTION extern "C" __attribute__((visibility("default")))
 	#else
 		#define EXPORT
-		#define EXPORT_FUNCTION
+		#define EXPORT_FUNCTION "C" __attribute__((visibility("default")))
 	#endif
 #endif

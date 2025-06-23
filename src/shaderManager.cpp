@@ -1,5 +1,6 @@
 #include "shaderManager.h"
 #include <cstring>
+#include <string>
 
 ShaderManager shaderManager;
 
@@ -24,20 +25,20 @@ bool checkShader(GLuint shader) {
 	return true;
 }
 
-GLuint ShaderManager::loadShader(const char* shaderType, const char* name, const char* shaderCode) {
+GLuint ShaderManager::loadShader(std::string shaderType, std::string name, std::string shaderCode) {
 	if (m_shaders.find(name) != m_shaders.end()) {
 		return m_shaders[name];
 	}
 
 	GLuint shader;
 
-	if (strcmp(shaderType, "vs") == 0) {
+	if (shaderType == "vs") {
 		shader = glCreateShader(GL_VERTEX_SHADER);
 	}
-	else if (strcmp(shaderType, "fs") == 0) {
+	else if (shaderType == "fs") {
 		shader = glCreateShader(GL_FRAGMENT_SHADER);
 	}
-	else if (strcmp(shaderType, "cs") == 0) {
+	else if (shaderType == "cs") {
 		shader = glCreateShader(GL_COMPUTE_SHADER);
 	}
 	else {
@@ -46,7 +47,7 @@ GLuint ShaderManager::loadShader(const char* shaderType, const char* name, const
 	}
 
 	std::cout << "Compiling shader: " << name << std::endl;
-	char const * sourcePointer = shaderCode;
+	char const* sourcePointer = shaderCode.c_str();
 	glShaderSource(shader, 1, &sourcePointer, NULL);
 	glCompileShader(shader);
 
@@ -58,7 +59,7 @@ GLuint ShaderManager::loadShader(const char* shaderType, const char* name, const
 	return shader;
 }
 
-GLuint ShaderManager::loadShaderFile(const char* filePath) {
+GLuint ShaderManager::loadShaderFile(std::string filePath) {
 	if (m_shaders.find(filePath) != m_shaders.end()) {
 		return m_shaders[filePath];
 	}
@@ -77,17 +78,16 @@ GLuint ShaderManager::loadShaderFile(const char* filePath) {
 
 	GLuint shader;
 
-	const char* dot = strrchr(filePath, '.');
-	const char* shaderType;
-	shaderType = dot + 1;
+	int extIndex = filePath.find_last_of(".");
+	std::string shaderType = filePath.substr(extIndex + 1);
 
-	if (strcmp(shaderType, "vs") == 0) {
+	if (shaderType == "vs") {
 		shader = glCreateShader(GL_VERTEX_SHADER);
 	}
-	else if (strcmp(shaderType, "fs") == 0) {
+	else if (shaderType == "fs") {
 		shader = glCreateShader(GL_FRAGMENT_SHADER);
 	}
-	else if (strcmp(shaderType, "cs") == 0) {
+	else if (shaderType == "cs") {
 		shader = glCreateShader(GL_COMPUTE_SHADER);
 	}
 	else {

@@ -10,7 +10,7 @@ GRID_Renderer::~GRID_Renderer() {
     delete m_renderer;
 }
 
-void GRID_Renderer::init(const char* textureName) {
+void GRID_Renderer::init(std::string textureName) {
     m_renderer->init(textureName);
 }
 
@@ -42,6 +42,6 @@ unsigned int GRID_Renderer::getGuiTexture() {
     return m_renderer->getImguiTexture();
 }
 
-const char* GRID_Renderer::getTextureName() {
+std::string GRID_Renderer::getTextureName() {
     return m_renderer->getTextureName();
 }

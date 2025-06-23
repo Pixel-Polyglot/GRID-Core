@@ -80,7 +80,7 @@ void Renderer::setQuadBufferData() {
 	glEnableVertexAttribArray(0);
 }
 
-void Renderer::init(const char* textureName) {
+void Renderer::init(std::string textureName) {
     m_guiTextureName = textureName;
     m_quad = new Quad();
     createBuffers();
@@ -143,6 +143,6 @@ GLuint Renderer::getImguiTexture() {
     return m_imguiTexture;
 }
 
-const char* Renderer::getTextureName() {
+std::string Renderer::getTextureName() {
     return m_guiTextureName;
 }

@@ -2,7 +2,7 @@
 #include <tinytiffreader.h>
 #include <iostream>
 
-Tiff::Tiff(const char* filePath) {
+Tiff::Tiff(std::string filePath) {
     load(filePath);
 }
 
@@ -30,9 +30,9 @@ GRID_TIFFFORMAT Tiff::getSampleFormat() {
     return m_sampleFormat;
 }
 
-void Tiff::load(const char* filePath) {
+void Tiff::load(std::string filePath) {
     TinyTIFFReaderFile* tiffr = NULL;
-    tiffr = TinyTIFFReader_open(filePath); 
+    tiffr = TinyTIFFReader_open(filePath.c_str()); 
     if (!tiffr) { 
         std::cout << "Tiff file:" << filePath << " not existent, not accessible or not a TIFF file)" << std::endl; 
     } else { 

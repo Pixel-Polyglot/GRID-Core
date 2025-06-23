@@ -10,7 +10,7 @@ bool GRID_UI::isWindowHovered() {
     return ImGui::IsWindowHovered();
 }
 
-void GRID_UI::begin(const char* name, bool padding) {
+void GRID_UI::begin(std::string name, bool padding) {
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
     m_styles = 2;
@@ -19,7 +19,7 @@ void GRID_UI::begin(const char* name, bool padding) {
         m_styles += 1;
     }
 
-    ImGui::Begin(name, nullptr);
+    ImGui::Begin(name.c_str(), nullptr);
 }
 
 void GRID_UI::end() {
@@ -28,23 +28,20 @@ void GRID_UI::end() {
     ImGui::PopStyleVar(m_styles);
 }
 
-void GRID_UI::text(const char* fmt, ...) {
-    va_list args;
-    va_start(args, fmt);
-    ImGui::TextV(fmt, args);
-    va_end(args);
+void GRID_UI::text(std::string text) {
+    ImGui::Text(text.c_str());
 }
 
-bool GRID_UI::checkbox(const char* label, bool* v) {
-    return ImGui::Checkbox(label, v);
+bool GRID_UI::checkbox(std::string label, bool* v) {
+    return ImGui::Checkbox(label.c_str(), v);
 }
 
-bool GRID_UI::inputText(const char* label, char* buf, size_t buf_size) {
-    return ImGui::InputText(label, buf, buf_size);
+bool GRID_UI::inputText(std::string label, char* buf, size_t buf_size) {
+    return ImGui::InputText(label.c_str(), buf, buf_size);
 }
 
-bool GRID_UI::button(const char* label) {
-    return ImGui::Button(label);
+bool GRID_UI::button(std::string label) {
+    return ImGui::Button(label.c_str());
 }
 
 void GRID_UI::image(void* user_texture_id, const GRID_Vec2f& image_size, const GRID_Vec2f& uv0, const GRID_Vec2f& uv1) {

@@ -10,7 +10,7 @@ Settings::Settings() {
 Settings::~Settings() {
 }
 
-void Settings::loadSettings(const char* filePath) {
+void Settings::loadSettings(std::string filePath) {
     std::ifstream f(filePath);
     json data;
     m_data = json::parse(f);
@@ -22,19 +22,19 @@ void Settings::loadSettings(const char* filePath) {
     m_relativePath = jsonPathString.substr(0, jsonPathString.find_last_of("/"));
 }
 
-bool Settings::getUserSettingAsBool(const char* key) {
+bool Settings::getUserSettingAsBool(std::string key) {
     return getUserSetting<bool>(key);
 }
 
-int Settings::getUserSettingAsInt(const char* key) {
+int Settings::getUserSettingAsInt(std::string key) {
     return getUserSetting<int>(key);
 }
 
-double Settings::getUserSettingAsDouble(const char* key) {
+double Settings::getUserSettingAsDouble(std::string key) {
     return getUserSetting<double>(key);
 }
 
-std::string Settings::getUserSettingAsString(const char* key) {
+std::string Settings::getUserSettingAsString(std::string key) {
     return getUserSetting<std::string>(key);
 }
 
