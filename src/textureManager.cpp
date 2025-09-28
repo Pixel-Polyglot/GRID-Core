@@ -114,6 +114,16 @@ GLuint TextureManager::createTexture(std::string name, glm::ivec2 resolution, GR
     return writeTexture(name, resolution, format, data);
 }
 
+void TextureManager::deleteTexture(std::string name) {
+    if (m_textures.find(name) == m_textures.end()) {
+        std::cout << "Texture with name: " << name << " does not exist" << std::endl;
+        return;
+    }
+
+    glDeleteTextures(1, &m_textures[name]);
+    m_textures.erase(name);
+}
+
 GLuint TextureManager::getTexture(std::string name) {
     if (m_textures.find(name) == m_textures.end()) {
         std::cout << "Texture with name: " << name << " does not exist" << std::endl;

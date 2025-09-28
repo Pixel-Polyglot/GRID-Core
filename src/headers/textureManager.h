@@ -13,6 +13,7 @@ public:
     GLuint writeTexture(std::string name, glm::ivec2 resolution, GRID_TEXTUREFORMAT format, int* data = 0);
     GLuint loadFromTiff(GRID_Tiff &tiff, std::string name);
     GLuint createTexture(std::string name, glm::ivec2 resolution, GRID_TEXTUREFORMAT format, int* data = 0);
+    void deleteTexture(std::string name);
     GLuint getTexture(std::string name);
     void saveTextureToFile(std::string textureName, std::string fileName, glm::ivec2 textureResolution, GRID_TEXTUREFORMAT format);
     void setTexture(std::string name, GLuint texture);

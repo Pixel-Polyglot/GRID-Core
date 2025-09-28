@@ -15,6 +15,10 @@ unsigned int GRID_Textures::createTexture(std::string name, GRID_Vec2i resolutio
     return textureManager.createTexture(name, toGLM(resolution), format, data);
 }
 
+void GRID_Textures::deleteTexture(std::string name) {
+    textureManager.deleteTexture(name);
+}
+
 unsigned int GRID_Textures::getTexture(std::string name) {
     return textureManager.getTexture(name);
 }
